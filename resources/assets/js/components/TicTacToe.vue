@@ -2,20 +2,67 @@
     <div>
         <div class="table">
             <div class="row" v-for="row in 3">
-                <div class="column" v-for="column in 3"></div>
+                <cell
+                    :class="{'my-turn': myTurn}"
+                    v-for="column in 3"
+                    :row="row"
+                    :column="column"
+                    :state.sync="state[row][column]"
+                ></cell>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import Cell from './Cell.vue'
+
     export default {
         data() {
             return {
+                myTurn: true,
+                state: [
+                    ['empty', 'empty', 'empty'],
+                    ['empty', 'empty', 'empty'],
+                    ['empty', 'empty', 'empty']
+                ]
             }
         },
 
-        methods: {},
+        components: {Cell},
+
+        methods: {
+            sendPlayEvent(cell) {
+                console.log('play event', cell.row, cell.column)
+            }
+        },
+
+        events: {
+            play(cell) {
+                if (!this.myTurn) {
+                    return
+                }
+
+                if (cell.state != 'empty') {
+                    return
+                }
+
+                cell.check()
+
+                this.myTurn = false
+
+                this.sendPlayEvent(cell)
+            },
+
+            onPlay(row, column) {
+                if (this.state[row][column] != 'empty') {
+                    return
+                }
+
+                this.$set('state[' + row + '][' + column + ']', 'away')
+                this.myTurn = true
+            }
+        },
 
         ready() {
 
