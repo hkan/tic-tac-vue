@@ -20,7 +20,7 @@
     export default {
         data() {
             return {
-                myTurn: true,
+                myTurn: false,
                 state: [
                     ['empty', 'empty', 'empty'],
                     ['empty', 'empty', 'empty'],
@@ -33,11 +33,15 @@
 
         methods: {
             sendPlayEvent(cell) {
-                console.log('play event', cell.row, cell.column)
+                this.$dispatch('play', cell.row, cell.column)
             }
         },
 
         events: {
+            start() {
+                this.$set('myTurn', true)
+            },
+
             play(cell) {
                 if (!this.myTurn) {
                     return
@@ -54,7 +58,7 @@
                 this.sendPlayEvent(cell)
             },
 
-            onPlay(row, column) {
+            onPlay({row, column}) {
                 if (this.state[row][column] != 'empty') {
                     return
                 }

@@ -9,12 +9,13 @@ new Vue({
 
     data: {
         socket: null,
-        id: null
+        id: null,
+        opponent: null
     },
 
     computed: {
         shareLink() {
-            return 'http://localhost:3000/?id=' + this.id
+            return 'http://tic-tac-vue.dev/?opponent=' + this.id
         }
     },
 
@@ -22,19 +23,38 @@ new Vue({
         TicTacToe
     },
 
+    events: {
+        play(row, column) {
+            this.socket.emit('play', row, column)
+        }
+    },
+
     ready() {
         var queryString = []
 
-        var match = window.location.search.match(/\bopponent\=([a-zA-Z0-9]+)\b/)
+        var match = window.location.search.match(/\bopponent\=([a-zA-Z0-9\-\_]+)\b/)
 
         if (match) {
+            this.opponent = match[1]
             queryString.push('opponent=' + match[1])
         }
 
-        this.socket = new Socket('127.0.0.1:3080' + (queryString.length ? '?' + queryString.join('&') : ''))
+        this.socket = new Socket('http://tic-tac-vue.dev:3080' + (queryString.length ? '?' + queryString.join('&') : ''))
 
         this.socket.on('connect', () => {
             this.$set('id', this.socket.id)
+
+            if (this.opponent) {
+                this.$broadcast('start')
+            }
+        })
+
+        this.socket.on('opponent', () => {
+            console.log('opponent connected')
+        })
+
+        this.socket.on('play', (row, column) => {
+            this.$broadcast('onPlay', row, column)
         })
     }
 })

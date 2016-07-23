@@ -24,8 +24,8 @@ http.listen(ENV.SOCKET_PORT)
 io.use(function (socket, next) {
     var params = socket.handshake.query
 
-    if (params.id) {
-        socket.opponent = params.id
+    if (params.opponent) {
+        socket.opponent = params.opponent
     }
 
     next()
@@ -38,12 +38,14 @@ io.use(function (socket, next) {
  */
 
 io.on('connection', function (socket) {
+    socket.join('room-' + socket.id.replace('/#', ''))
+
     if (socket.opponent) {
-        socket.join('/#' + socket.opponent)
-        socket.to(socket.opponent).emit('opponent', {id:socket.id})
+        socket.join('room-' + socket.opponent)
+        io.to('room-' + socket.opponent).emit('opponent', {id:socket.id.replace('/#', '')})
     }
 
-    socket.on('play', function (data) {
-
+    socket.on('play', function (row, column) {
+        socket.broadcast.to('room-' + (socket.opponent || socket.id.replace('/#', ''))).emit('play', {row:row, column:column})
     })
 })
