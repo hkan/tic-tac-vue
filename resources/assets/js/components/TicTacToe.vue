@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="table">
+        <div class="tic-tac-toe-table">
             <div class="row" v-for="row in 3">
                 <cell
                     :class="{'my-turn': myTurn}"
@@ -71,9 +71,9 @@
 </script>
 
 <style lang="scss">
-    .table {
+    .tic-tac-toe-table {
         width: 330px;
-        margin: 0 auto;
+        margin: 50px auto;
 
         .row {
             display: flex;
