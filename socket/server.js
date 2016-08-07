@@ -37,21 +37,62 @@ io.use(function (socket, next) {
  |--------------------------------------------------------------------------
  */
 
-io.on('connection', function (socket) {
-    var idClean = socket.id.replace('/#', ''),
-        room = 'room-' + idClean
+function findClient(id) {
+    if (id.substr(0, 2) != '/#') {
+        id = '/#' + id
+    }
 
-    socket.join('room-' + idClean)
+    return io.nsps['/'].sockets[id]
+}
+
+function startGame(socket, opponent) {
+    if (!opponent) {
+        return false
+    }
+
+    if (opponent.gameRoom) {
+        return false
+    }
+
+    // Create a new room
+    room = 'room-' + Date.now()
+
+    // Join both parties into the room
+    socket.join(room)
+    opponent.join(room)
+
+    opponent.gameRoom = room
+    socket.gameRoom = room
+
+    return true
+}
+
+// New socket client
+io.on('connection', function (socket) {
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
-        room = 'room-' + socket.opponent
-        socket.join(room)
-        io.to(room).emit('opponent-connected', {id: socket.id.replace('/#', '')})
+        var opponent = findClient(socket.opponent),
+            started = startGame(socket, opponent)
+
+        if (!started) {
+            socket.emit('game-failed')
+        } else {
+            // tell both parties about the game
+            socket.emit('game', {opponent: opponent.id.replace('/#', '')})
+            opponent.emit('game', {opponent: socket.id.replace('/#', '')})
+        }
     }
 
+    // User checked one of the cells
     socket.on('play', function (row, column) {
         socket.broadcast.to(room)
             .emit('opponent-played', {row:row, column:column})
+    })
+
+    // User wants to play again
+    socket.on('play-again', function () {
+        socket.broadcast.to(room)
+            .emit('opponent-wanna-play-again')
     })
 })
