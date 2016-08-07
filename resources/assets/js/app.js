@@ -55,8 +55,8 @@ new Vue({
             }
         })
 
-        this.socket.on('opponent-connected', () => {
-            console.log('opponent connected')
+        this.socket.on('opponent-connected', (opponent) => {
+            this.opponent = opponent.id
         })
 
         this.socket.on('opponent-played', (row, column) => {
