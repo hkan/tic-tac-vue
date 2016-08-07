@@ -9,13 +9,14 @@ new Vue({
 
     data: {
         socket: null,
-        id: null,
-        opponent: null
+        connected: false,
+        opponent: null,
+        showReplayConfirmation: false
     },
 
     computed: {
         shareLink() {
-            return 'http://tic-tac-vue.dev/?opponent=' + this.id
+            return 'http://tic-tac-vue.dev/?opponent=' + this.socket.id
         }
     },
 
@@ -32,6 +33,14 @@ new Vue({
     events: {
         play(row, column) {
             this.socket.emit('play', row, column)
+        },
+
+        restart() {
+            this.socket.emit('restart')
+        },
+
+        'opponent-wants-again'() {
+            this.showReplayConfirmation = true
         }
     },
 
@@ -48,19 +57,20 @@ new Vue({
         this.socket = new Socket('http://tic-tac-vue.dev:3080' + (queryString.length ? '?' + queryString.join('&') : ''))
 
         this.socket.on('connect', () => {
-            this.$set('id', this.socket.id)
-
-            if (this.opponent) {
-                this.$broadcast('start')
-            }
+            this.$set('connected', true)
         })
 
-        this.socket.on('opponent-connected', (opponent) => {
-            this.opponent = opponent.id
+        this.socket.on('game', (data) => {
+            this.opponent = data.opponent
+            this.$broadcast('game', data.game)
         })
 
         this.socket.on('opponent-played', (row, column) => {
             this.$broadcast('opponent-played', row, column)
+        })
+
+        this.socket.on('opponent-wants-again', () => {
+            this.$emit('opponent-wants-again')
         })
     }
 })

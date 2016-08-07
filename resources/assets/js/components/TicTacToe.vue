@@ -12,16 +12,13 @@
             </div>
         </div>
 
-        <div :class="['game-over']" v-show="over">
-            <div v-show="won == 'home'">You won!</div>
-            <div v-show="won == 'away'">You lost!</div>
-            <div v-show="won == null">It's over</div>
-        </div>
+        <game-over v-show="over"></game-over>
     </div>
 </template>
 
 <script>
     import Cell from './Cell.vue'
+    import GameOver from './GameOver.vue'
     import _ from 'lodash'
 
     export default {
@@ -77,7 +74,10 @@
             }
         },
 
-        components: {Cell},
+        components: {
+            Cell,
+            GameOver,
+        },
 
         methods: {
             sendPlayEvent(cell) {
@@ -141,6 +141,10 @@
         },
 
         events: {
+            game(game) {
+                this.game = game
+            },
+
             start() {
                 this.$set('myTurn', true)
             },
@@ -202,18 +206,5 @@
                 height: 100px;
             }
         }
-    }
-
-    .game-over {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background: rgba(#fff, .4);
-        justify-content: center;
-        display: flex;
-        align-items: center;
-        font-size: 40px;
     }
 </style>

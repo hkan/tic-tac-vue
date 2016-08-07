@@ -34,7 +34,7 @@
     <div id="app">
         <tic-tac-toe></tic-tac-toe>
 
-        <input type="text" class="input" :value="shareLink" @click="select" v-if="!opponent">
+        <input type="text" class="input" :value="shareLink" @click="select" v-if="connected && !opponent">
     </div>
 
     <script src="assets/js/app.js"></script>
