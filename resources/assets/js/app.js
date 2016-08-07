@@ -54,15 +54,13 @@ new Vue({
             queryString.push('opponent=' + match[1])
         }
 
-        this.socket = new Socket('http://tic-tac-vue.dev:3080' + (queryString.length ? '?' + queryString.join('&') : ''))
+        this.socket = new Socket('http://' + window.location.host + ':3080' + (queryString.length ? '?' + queryString.join('&') : ''))
 
         this.socket.on('connect', () => {
             this.$set('connected', true)
         })
 
         this.socket.on('game', (data) => {
-            console.log('game', data)
-
             this.opponent = data.opponent
             this.$broadcast('game', data.game)
 
