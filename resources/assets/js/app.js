@@ -16,7 +16,7 @@ new Vue({
 
     computed: {
         shareLink() {
-            return 'http://tic-tac-vue.dev/?opponent=' + this.socket.id
+            return 'http://' + window.location.host + '/?opponent=' + this.socket.id
         }
     },
 
