@@ -25,7 +25,7 @@ io.use(function (socket, next) {
     var params = socket.handshake.query
 
     if (params.opponent) {
-        socket.opponent = params.opponent
+        socket.opponent = findClient(params.opponent)
     }
 
     next()
@@ -61,6 +61,9 @@ function startGame(socket, opponent) {
     socket.join(room)
     opponent.join(room)
 
+    socket.opponent = opponent
+    opponent.opponent = socket
+
     opponent.gameRoom = room
     socket.gameRoom = room
 
@@ -72,7 +75,7 @@ io.on('connection', function (socket) {
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
-        var opponent = findClient(socket.opponent),
+        var opponent = socket.opponent,
             started = startGame(socket, opponent)
 
         if (!started) {
@@ -83,6 +86,18 @@ io.on('connection', function (socket) {
             opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom, starts: false})
         }
     }
+
+    socket.on('disconnect', function () {
+        if (socket.opponent) {
+            socket.opponent.emit('opponent-disconnected')
+
+            socket.opponent.gameRoom = null
+            socket.opponent.opponent = null
+
+            socket.gameRoom = null
+            socket.opponent = null
+        }
+    })
 
     // User checked one of the cells
     socket.on('play', function (row, column) {

@@ -124,6 +124,14 @@
                 }
             },
 
+            reset() {
+                this.$set('state', [
+                    ['empty', 'empty', 'empty'],
+                    ['empty', 'empty', 'empty'],
+                    ['empty', 'empty', 'empty']
+                ])
+            },
+
             homeWins() {
                 this.won = 'home'
                 this.over = true
@@ -147,6 +155,13 @@
 
             start() {
                 this.$set('myTurn', true)
+            },
+
+            'opponent-disconnected'() {
+                this.$set('myTurn', false)
+                this.game = null
+
+                this.reset()
             },
 
             'home-played'(cell) {

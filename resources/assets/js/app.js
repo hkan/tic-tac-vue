@@ -61,12 +61,19 @@ new Vue({
         })
 
         this.socket.on('game', (data) => {
+            console.log('game', data)
+
             this.opponent = data.opponent
             this.$broadcast('game', data.game)
 
             if (data.starts) {
                 this.$broadcast('start')
             }
+        })
+
+        this.socket.on('opponent-disconnected', () => {
+            this.opponent = null
+            this.$broadcast('opponent-disconnected')
         })
 
         this.socket.on('opponent-played', (row, column) => {
