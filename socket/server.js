@@ -55,7 +55,7 @@ function startGame(socket, opponent) {
     }
 
     // Create a new room
-    room = 'room-' + Date.now()
+    room = 'game-' + Date.now()
 
     // Join both parties into the room
     socket.join(room)
@@ -79,8 +79,8 @@ io.on('connection', function (socket) {
             socket.emit('game-failed')
         } else {
             // tell both parties about the game
-            socket.emit('game', {opponent: opponent.id.replace('/#', '')})
-            opponent.emit('game', {opponent: socket.id.replace('/#', '')})
+            socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom})
+            opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom})
         }
     }
 
