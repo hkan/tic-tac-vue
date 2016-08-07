@@ -23,6 +23,12 @@ new Vue({
         TicTacToe
     },
 
+    methods: {
+        select(e) {
+            e.target.select()
+        }
+    },
+
     events: {
         play(row, column) {
             this.socket.emit('play', row, column)
@@ -49,12 +55,12 @@ new Vue({
             }
         })
 
-        this.socket.on('opponent', () => {
+        this.socket.on('opponent-connected', () => {
             console.log('opponent connected')
         })
 
-        this.socket.on('play', (row, column) => {
-            this.$broadcast('onPlay', row, column)
+        this.socket.on('opponent-played', (row, column) => {
+            this.$broadcast('opponent-played', row, column)
         })
     }
 })

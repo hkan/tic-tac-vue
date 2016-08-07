@@ -1,6 +1,6 @@
 <template>
     <div
-        :class="['column', 'state-' + state]"
+        :class="['cell', 'state-' + state]"
         @click="click"
     ></div>
 </template>
@@ -32,7 +32,7 @@
                     return
                 }
 
-                this.$dispatch('play', this)
+                this.$dispatch('home-played', this)
             },
 
             check(away) {
@@ -43,10 +43,11 @@
 </script>
 
 <style lang="scss" scoped>
-    div.column {
+    div.cell {
         position: relative;
+        background: #f5f5f5;
 
-        &.state-empty.my-turn {
+        &.state-empty.turn {
             cursor: pointer;
 
             &:hover {

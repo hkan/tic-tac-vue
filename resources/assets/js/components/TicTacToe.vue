@@ -1,9 +1,9 @@
 <template>
-    <div>
-        <div class="tic-tac-toe-table">
+    <div class="tic-tac-toe-game">
+        <div :class="['tic-tac-toe-table', {'active': game != null, 'turn': myTurn}]">
             <div class="row" v-for="row in 3">
                 <cell
-                    :class="{'my-turn': myTurn}"
+                    :class="{'turn': myTurn}"
                     v-for="column in 3"
                     :row="row"
                     :column="column"
@@ -11,16 +11,28 @@
                 ></cell>
             </div>
         </div>
+
+        <div :class="['game-over']" v-show="over">
+            <div v-show="won == 'home'">You won!</div>
+            <div v-show="won == 'away'">You lost!</div>
+            <div v-show="won == null">It's over</div>
+        </div>
     </div>
 </template>
 
 <script>
     import Cell from './Cell.vue'
+    import _ from 'lodash'
 
     export default {
         data() {
             return {
+                game: null,
                 myTurn: false,
+
+                over: false,
+                won: null,
+
                 state: [
                     ['empty', 'empty', 'empty'],
                     ['empty', 'empty', 'empty'],
@@ -29,11 +41,102 @@
             }
         },
 
+        computed: {
+            isAllCellsChecked() {
+                return this.state.reduce((rowResult, row) => {
+                    return rowResult && row.reduce((cellResult, cell) => {
+                        return cellResult && cell != 'empty'
+                    })
+                })
+            },
+
+            horizontalTriple() {
+                return this.checkForTriples(this.state)
+            },
+
+            verticalTriple() {
+                return this.checkForTriples(_.zip.apply(_, this.state))
+            },
+
+            crossTriple() {
+                if (this.state[0][0] == this.state[1][1]
+                    && this.state[1][1] == this.state[2][2]
+                    && (this.state[1][1] == 'home' || this.state[1][1] == 'away')
+                ) {
+                    return this.state[1][1]
+                }
+
+                if (this.state[2][0] == this.state[1][1]
+                    && this.state[1][1] == this.state[0][2]
+                    && (this.state[1][1] == 'home' || this.state[1][1] == 'away')
+                ) {
+                    return this.state[1][1]
+                }
+
+                return false
+            }
+        },
+
         components: {Cell},
 
         methods: {
             sendPlayEvent(cell) {
                 this.$dispatch('play', cell.row, cell.column)
+            },
+
+            checkForTriples(matrix) {
+                return matrix.reduce((rowResult, row) => {
+                    var curRes = row.reduce((result, cell) => {
+                        if (result === null) {
+                            return cell
+                        }
+
+                        if (result != cell) {
+                            return false
+                        }
+
+                        if (cell != 'home' && cell != 'away') {
+                            return false
+                        }
+
+                        return cell
+                    }, null)
+
+                    return rowResult || curRes
+                }, false)
+            },
+
+            checkForEnd() {
+                if (this.horizontalTriple !== false) {
+                    return this[this.horizontalTriple + 'Wins']()
+                }
+
+                if (this.verticalTriple !== false) {
+                    return this[this.verticalTriple + 'Wins']()
+                }
+
+                if (this.crossTriple !== false) {
+                    return this[this.crossTriple + 'Wins']()
+                }
+
+                if (this.isAllCellsChecked) {
+                    return this.tie()
+                }
+            },
+
+            homeWins() {
+                this.won = 'home'
+                this.over = true
+            },
+
+            awayWins() {
+                this.won = 'away'
+                this.over = true
+            },
+
+            tie() {
+                this.won = null
+                this.over = true
             }
         },
 
@@ -42,7 +145,7 @@
                 this.$set('myTurn', true)
             },
 
-            play(cell) {
+            'home-played'(cell) {
                 if (!this.myTurn) {
                     return
                 }
@@ -56,15 +159,17 @@
                 this.myTurn = false
 
                 this.sendPlayEvent(cell)
+                this.checkForEnd()
             },
 
-            onPlay({row, column}) {
+            'opponent-played'({row, column}) {
                 if (this.state[row][column] != 'empty') {
                     return
                 }
 
                 this.$set('state[' + row + '][' + column + ']', 'away')
                 this.myTurn = true
+                this.checkForEnd()
             }
         },
 
@@ -75,6 +180,10 @@
 </script>
 
 <style lang="scss">
+    .tic-tac-toe-game {
+        position: relative;
+    }
+
     .tic-tac-toe-table {
         width: 330px;
         margin: 50px auto;
@@ -87,12 +196,24 @@
                 margin-top: 15px;
             }
 
-            .column {
+            .cell {
                 flex: 0 0 100px;
-                background: #f5f5f5;
                 border-radius: 10px;
                 height: 100px;
             }
         }
+    }
+
+    .game-over {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(#fff, .4);
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        font-size: 40px;
     }
 </style>

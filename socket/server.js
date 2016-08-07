@@ -38,14 +38,20 @@ io.use(function (socket, next) {
  */
 
 io.on('connection', function (socket) {
-    socket.join('room-' + socket.id.replace('/#', ''))
+    var idClean = socket.id.replace('/#', ''),
+        room = 'room-' + idClean
 
+    socket.join('room-' + idClean)
+
+    // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
-        socket.join('room-' + socket.opponent)
-        io.to('room-' + socket.opponent).emit('opponent', {id:socket.id.replace('/#', '')})
+        room = 'room-' + socket.opponent
+        socket.join(room)
+        io.to(room).emit('opponent-connected', {id: socket.id.replace('/#', '')})
     }
 
     socket.on('play', function (row, column) {
-        socket.broadcast.to('room-' + (socket.opponent || socket.id.replace('/#', ''))).emit('play', {row:row, column:column})
+        socket.broadcast.to(room)
+            .emit('opponent-played', {row:row, column:column})
     })
 })
