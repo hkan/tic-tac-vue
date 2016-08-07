@@ -79,8 +79,8 @@ io.on('connection', function (socket) {
             socket.emit('game-failed')
         } else {
             // tell both parties about the game
-            socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom})
-            opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom})
+            socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom, starts: true})
+            opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom, starts: false})
         }
     }
 
