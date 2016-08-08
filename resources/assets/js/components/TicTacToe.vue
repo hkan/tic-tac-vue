@@ -217,7 +217,7 @@
     }
 
     .tic-tac-toe-table {
-        width: 330px;
+        width: 100%;
         margin: 50px auto 30px;
 
         .row {
@@ -229,9 +229,9 @@
             }
 
             .cell {
-                flex: 0 0 100px;
+                flex: 0 0 90px;
                 border-radius: 10px;
-                height: 100px;
+                height: 90px;
             }
         }
     }
