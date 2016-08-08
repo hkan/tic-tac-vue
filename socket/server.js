@@ -98,7 +98,7 @@ io.on('connection', function (socket) {
             socket.opponent.opponent = null
 
             socket.started = false
-            opponent.started = false
+            socket.opponent.started = false
 
             socket.gameRoom = null
             socket.opponent = null
