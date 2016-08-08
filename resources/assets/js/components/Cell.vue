@@ -56,29 +56,27 @@
         }
 
         &.state-home {
-            background: green;
-            color: #fff;
-
             &:before {
-                content: "✓";
-                font-size: 80px;
-                line-height: 1;
+                content: "";
+                height: 60px;
+                width: 35px;
+                border: solid green;
+                border-width: 0 15px 15px 0;
                 position: absolute;
                 left: 50%;
                 top: 10px;
                 margin: 0;
-                transform: translate(-50%);
+                transform: translate(-50%) rotate(45deg);
             }
         }
 
         &.state-away {
-            background: red;
-            color: #fff;
-
             &:before {
-                content: "✖︎";
-                font-size: 80px;
-                line-height: 1;
+                content: "";
+                height: 70px;
+                width: 70px;
+                border: 15px solid red;
+                border-radius: 50%;
                 position: absolute;
                 left: 50%;
                 top: 10px;
