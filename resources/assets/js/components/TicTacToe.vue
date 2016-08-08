@@ -12,6 +12,10 @@
             </div>
         </div>
 
+        <div class="your-turn" v-show="myTurn">
+            It's your turn!
+        </div>
+
         <game-over v-show="over"></game-over>
     </div>
 </template>
@@ -214,7 +218,7 @@
 
     .tic-tac-toe-table {
         width: 330px;
-        margin: 50px auto;
+        margin: 50px auto 30px;
 
         .row {
             display: flex;
@@ -230,5 +234,12 @@
                 height: 100px;
             }
         }
+    }
+
+    .your-turn {
+        font-size: 16px;
+        color: #666;
+        font-weight: bold;
+        text-align: center
     }
 </style>

@@ -34,6 +34,7 @@
     <div id="app">
         <tic-tac-toe></tic-tac-toe>
 
+        <div v-if="!connected">Waiting for socket connection...</div>
         <input type="text" class="input" :value="shareLink" @click="select" v-if="connected && !opponent">
     </div>
 
