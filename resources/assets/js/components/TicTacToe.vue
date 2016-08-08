@@ -130,6 +130,10 @@
                     ['empty', 'empty', 'empty'],
                     ['empty', 'empty', 'empty']
                 ])
+
+                this.won = null
+                this.over = false
+                this.myTurn = false
             },
 
             homeWins() {
@@ -155,6 +159,11 @@
 
             start() {
                 this.$set('myTurn', true)
+            },
+
+            restart() {
+                this.reset()
+                return true
             },
 
             'opponent-disconnected'() {

@@ -35,12 +35,12 @@ new Vue({
             this.socket.emit('play', row, column)
         },
 
-        restart() {
-            this.socket.emit('restart')
+        'play-again'() {
+            this.socket.emit('play-again')
         },
 
         'opponent-wants-again'() {
-            this.showReplayConfirmation = true
+            this.$broadcast('opponent-wants-again')
         }
     },
 
@@ -63,6 +63,14 @@ new Vue({
         this.socket.on('game', (data) => {
             this.opponent = data.opponent
             this.$broadcast('game', data.game)
+
+            if (data.starts) {
+                this.$broadcast('start')
+            }
+        })
+
+        this.socket.on('restart', data => {
+            this.$broadcast('restart')
 
             if (data.starts) {
                 this.$broadcast('start')

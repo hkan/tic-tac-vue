@@ -4,13 +4,14 @@
         <div v-if="won == 'away'">You lost!</div>
         <div v-if="won == null">It's over</div>
 
-        <a class="button" @click="playAgain">
-            Wanna go again? 😏
+        <button class="button" @click="playAgain" :disabled="checked">
+            <span v-show="checked">Waiting for opponent...</span>
+            <span v-else>Wanna go again? 😏</span>
 
             <span class="opponent-wants" v-if="opponentWants">
                 Your opponent does!
             </span>
-        </a>
+        </button>
     </div>
 </template>
 
@@ -18,19 +19,33 @@
     export default {
         data() {
             return {
+                checked: false,
                 opponentWants: false
+            }
+        },
+
+        computed: {
+            won() {
+                return this.$parent.won
             }
         },
 
         events: {
             'opponent-wants-again'() {
                 this.$set('opponentWants', true)
+            },
+
+            restart() {
+                this.checked = false
+                this.$set('opponentWants', false)
+                return true
             }
         },
 
         methods: {
             playAgain() {
-
+                this.checked = true
+                this.$dispatch('play-again')
             },
         }
     }

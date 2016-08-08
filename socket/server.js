@@ -101,13 +101,27 @@ io.on('connection', function (socket) {
 
     // User checked one of the cells
     socket.on('play', function (row, column) {
-        socket.broadcast.to(room)
+        socket.broadcast.to(socket.gameRoom)
             .emit('opponent-played', {row:row, column:column})
     })
 
     // User wants to play again
     socket.on('play-again', function () {
-        socket.broadcast.to(room)
-            .emit('opponent-wanna-play-again')
+        // If opponent already confirmed to play again, start it
+        if (socket.opponent && socket.opponent.wantsAgain) {
+            // Start game for both
+            socket.emit('restart', {starts: true})
+            socket.opponent.emit('restart', {starts: false})
+
+            // Reset statuses
+            socket.wantsAgain = false
+            socket.opponent.wantsAgain = false
+            return
+        }
+
+        socket.wantsAgain = true
+
+        socket.broadcast.to(socket.gameRoom)
+            .emit('opponent-wants-again')
     })
 })
