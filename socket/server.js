@@ -84,6 +84,9 @@ io.on('connection', function (socket) {
             // tell both parties about the game
             socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom, starts: true})
             opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom, starts: false})
+
+            socket.started = true
+            opponent.started = false
         }
     }
 
@@ -93,6 +96,9 @@ io.on('connection', function (socket) {
 
             socket.opponent.gameRoom = null
             socket.opponent.opponent = null
+
+            socket.started = false
+            opponent.started = false
 
             socket.gameRoom = null
             socket.opponent = null
@@ -110,8 +116,11 @@ io.on('connection', function (socket) {
         // If opponent already confirmed to play again, start it
         if (socket.opponent && socket.opponent.wantsAgain) {
             // Start game for both
-            socket.emit('restart', {starts: true})
-            socket.opponent.emit('restart', {starts: false})
+            socket.emit('restart', {starts: !socket.started})
+            socket.opponent.emit('restart', {starts: !socket.opponent.started})
+
+            socket.started = !socket.started
+            socket.opponent.started = !socket.opponent.started
 
             // Reset statuses
             socket.wantsAgain = false
