@@ -13,18 +13,39 @@
 </template>
 
 <script>
+    import Cell from './Cell.vue'
+
     export default {
-        data: function () {
-            return {
-            }
-        },
-        computed: {},
-        ready: function () {},
-        attached: function () {},
-        methods: {},
-        components: {}
+        props: [
+            'state',
+            'game',
+            'myTurn'
+        ],
+
+        components: {
+            Cell
+        }
     }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
+    .tic-tac-toe-table {
+        width: 100%;
+        margin: 50px auto 30px;
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+
+            + .row {
+                margin-top: 15px;
+            }
+
+            .cell {
+                flex: 0 0 90px;
+                border-radius: 10px;
+                height: 90px;
+            }
+        }
+    }
 </style>

@@ -1,16 +1,10 @@
 <template>
     <div class="tic-tac-toe-game">
-        <div :class="['tic-tac-toe-table', {'active': game != null, 'turn': myTurn}]">
-            <div class="row" v-for="row in 3">
-                <cell
-                    :class="{'turn': myTurn}"
-                    v-for="column in 3"
-                    :row="row"
-                    :column="column"
-                    :state.sync="state[row][column]"
-                ></cell>
-            </div>
-        </div>
+        <game-table
+            :game.sync="game"
+            :state.sync="state"
+            :my-turn.sync="myTurn"
+        ></game-table>
 
         <div class="your-turn" v-show="myTurn">
             It's your turn!
@@ -21,7 +15,7 @@
 </template>
 
 <script>
-    import Cell from './Cell.vue'
+    import GameTable from './Table.vue'
     import GameOver from './GameOver.vue'
     import _ from 'lodash'
 
@@ -79,7 +73,7 @@
         },
 
         components: {
-            Cell,
+            GameTable,
             GameOver,
         },
 
@@ -214,26 +208,6 @@
 <style lang="scss">
     .tic-tac-toe-game {
         position: relative;
-    }
-
-    .tic-tac-toe-table {
-        width: 100%;
-        margin: 50px auto 30px;
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-
-            + .row {
-                margin-top: 15px;
-            }
-
-            .cell {
-                flex: 0 0 90px;
-                border-radius: 10px;
-                height: 90px;
-            }
-        }
     }
 
     .your-turn {
