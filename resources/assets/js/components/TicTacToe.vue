@@ -6,8 +6,9 @@
             :my-turn.sync="myTurn"
         ></game-table>
 
-        <div class="your-turn" v-show="myTurn">
-            It's your turn!
+        <div class="turn-indicator" v-if="game !== null">
+            <span v-show="myTurn">It's your turn!</span>
+            <span v-else>It's opponent's turn.</span>
         </div>
 
         <game-over v-show="over"></game-over>
@@ -210,7 +211,7 @@
         position: relative;
     }
 
-    .your-turn {
+    .turn-indicator {
         font-size: 16px;
         color: #666;
         font-weight: bold;
