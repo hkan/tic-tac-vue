@@ -3,6 +3,8 @@ import Vue from 'vue'
 
 import Game from './components/Game.vue'
 import Welcome from './components/Welcome.vue'
+import Ready from './components/Ready.vue'
+import MatchRequest from './components/MatchRequest.vue'
 
 Vue.options.debug = true
 
@@ -13,11 +15,13 @@ new Vue({
         currentView: 'welcome',
         socket: null,
         connected: false,
+        user: null
     },
 
     components: {
         Game,
-        Welcome
+        Welcome,
+        Ready,
     },
 
     events: {
@@ -36,6 +40,11 @@ new Vue({
         register(data) {
             this.socket.emit('register', data)
         },
+
+        'user-ready'(user) {
+            this.user = user
+            this.currentView = 'ready'
+        }
     },
 
     ready() {
@@ -52,6 +61,14 @@ new Vue({
             if (data.starts) {
                 this.$broadcast('start')
             }
+        })
+
+        this.socket.on('match-request', data => {
+            var component = new MatchRequest({
+                data,
+                parent: this
+            })
+            component.$mount().$appendTo(document.body)
         })
 
         this.socket.on('restart', data => {

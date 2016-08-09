@@ -45,6 +45,12 @@ function findClient(id) {
     return io.nsps['/'].sockets[id]
 }
 
+function findByUsername(username) {
+    return _.find(io.nsps['/'].sockets, function (client) {
+        return client.username == username
+    })
+}
+
 function startGame(socket, opponent) {
     if (!opponent) {
         return false
@@ -67,6 +73,13 @@ function startGame(socket, opponent) {
     opponent.gameRoom = room
     socket.gameRoom = room
 
+    // tell both parties about the game
+    socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom, starts: true})
+    opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom, starts: false})
+
+    socket.started = true
+    opponent.started = false
+
     return true
 }
 
@@ -80,13 +93,6 @@ io.on('connection', function (socket) {
 
         if (!started) {
             socket.emit('game-failed')
-        } else {
-            // tell both parties about the game
-            socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom, starts: true})
-            opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom, starts: false})
-
-            socket.started = true
-            opponent.started = false
         }
     }
 
@@ -117,13 +123,7 @@ io.on('connection', function (socket) {
             return
         }
 
-        var client = _.find(io.nsps['/'].sockets, function (client) {
-            if (client.id == socket.id) {
-                return false
-            }
-
-            return client.username == data.username
-        })
+        var client = findByUsername(data.username)
 
         if (client) {
             socket.emit('register-failed', 'User exists.')
@@ -134,7 +134,85 @@ io.on('connection', function (socket) {
         socket.emit('registered')
     })
 
-    // User wants to play again
+    /**
+     * When user requests to match with a specific user.
+     *
+     * @param {string} username Given username to find the user
+     */
+    socket.on('match-with', function (username) {
+        var opponent = findByUsername(username)
+
+        if (!opponent) {
+            socket.emit('match-failed', 'User not available.')
+            return
+        }
+
+        // Opponent is already in a game
+        if (opponent.gameRoom) {
+            socket.emit('match-failed', 'User is currently playing.')
+            return
+        }
+
+        opponent.gotMatchRequestedBy = socket
+
+        socket.emit('matched')
+        opponent.emit('match-request', {username: socket.username})
+    })
+
+    /**
+     * When user confirms the incoming match request.
+     */
+    socket.on('match-confirm', function () {
+        var opponent = socket.gotMatchRequestedBy
+
+        if (!opponent) {
+            socket.emit('match-confirm-failed')
+            return
+        }
+
+        // Clean up match request
+        delete socket.gotMatchRequestedBy
+
+        socket.matched = opponent
+        opponent.matched = socket
+
+        socket.emit('match-successful')
+        opponent.emit('match-successful')
+    })
+
+    /**
+     * When one of the clients is ready to begin the game.
+     */
+    socket.on('ready-to-begin', function () {
+        var opponent = socket.matched
+
+        // No opponents? No game...
+        if (!opponent) {
+            return
+        }
+
+        // If opponent's ready, game can start immediately
+        if (opponent.readyToBegin) {
+            // Clean up the match info
+            delete socket.readyToBegin
+            delete socket.matched
+            delete opponent.readyToBegin
+            delete opponent.matched
+
+            // Start the game
+            startGame(socket, opponent)
+
+            // Stop event execution here
+            return
+        }
+
+        // Mark this client as ready to begin and wait for opponent
+        socket.readyToBegin = true
+    })
+
+    /**
+     * User wants to play again.
+     */
     socket.on('play-again', function () {
         // If opponent already confirmed to play again, start it
         if (socket.opponent && socket.opponent.wantsAgain) {

@@ -58,7 +58,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        background: rgba(#fff, .7);
+        background: rgba(#f5f5f5, .85);
         justify-content: center;
         display: flex;
         flex-direction: column;
