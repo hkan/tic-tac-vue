@@ -1,6 +1,8 @@
 import Socket from 'socket.io-client'
 import Vue from 'vue'
-import TicTacToe from './components/TicTacToe.vue'
+
+import Game from './components/Game.vue'
+import Welcome from './components/Welcome.vue'
 
 Vue.options.debug = true
 
@@ -8,26 +10,14 @@ new Vue({
     el: '#app',
 
     data: {
+        currentView: 'welcome',
         socket: null,
         connected: false,
-        opponent: null,
-        showReplayConfirmation: false
-    },
-
-    computed: {
-        shareLink() {
-            return 'http://' + window.location.host + '/?opponent=' + this.socket.id
-        }
     },
 
     components: {
-        TicTacToe
-    },
-
-    methods: {
-        select(e) {
-            e.target.select()
-        }
+        Game,
+        Welcome
     },
 
     events: {
@@ -41,20 +31,15 @@ new Vue({
 
         'opponent-wants-again'() {
             this.$broadcast('opponent-wants-again')
-        }
+        },
+
+        register(data) {
+            this.socket.emit('register', data)
+        },
     },
 
     ready() {
-        var queryString = []
-
-        var match = window.location.search.match(/\bopponent\=([a-zA-Z0-9\-\_]+)\b/)
-
-        if (match) {
-            this.opponent = match[1]
-            queryString.push('opponent=' + match[1])
-        }
-
-        this.socket = new Socket('http://' + window.location.host + ':3080' + (queryString.length ? '?' + queryString.join('&') : ''))
+        this.socket = new Socket('http://' + window.location.host + ':3080')
 
         this.socket.on('connect', () => {
             this.$set('connected', true)
@@ -75,6 +60,14 @@ new Vue({
             if (data.starts) {
                 this.$broadcast('start')
             }
+        })
+
+        this.socket.on('registered', () => {
+            this.$broadcast('registered')
+        })
+
+        this.socket.on('register-failed', response => {
+            this.$broadcast('register-failed', response)
         })
 
         this.socket.on('opponent-disconnected', () => {

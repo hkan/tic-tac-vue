@@ -2,7 +2,7 @@
 var ENV = require('node-env-file')(__dirname + '/../.env')
 
 // Underscore.js
-var _ = require('underscore')
+var _ = require('lodash')
 
 // HTTP Server
 var app = require('express')()
@@ -109,6 +109,29 @@ io.on('connection', function (socket) {
     socket.on('play', function (row, column) {
         socket.broadcast.to(socket.gameRoom)
             .emit('opponent-played', {row:row, column:column})
+    })
+
+    socket.on('register', function (data) {
+        if (socket.username && socket.username.length) {
+            socket.emit('register-failed', 'Already registered.')
+            return
+        }
+
+        var client = _.find(io.nsps['/'].sockets, function (client) {
+            if (client.id == socket.id) {
+                return false
+            }
+
+            return client.username == data.username
+        })
+
+        if (client) {
+            socket.emit('register-failed', 'User exists.')
+            return
+        }
+
+        socket.username = data.username
+        socket.emit('registered')
     })
 
     // User wants to play again

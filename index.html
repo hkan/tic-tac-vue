@@ -33,11 +33,8 @@
 </head>
 
 <body>
-    <div id="app">
-        <tic-tac-toe></tic-tac-toe>
-
-        <div v-if="!connected">Waiting for socket connection...</div>
-        <input type="text" class="input" :value="shareLink" @click="select" v-if="connected && !opponent">
+    <div id="app" class="content">
+        <component :is="currentView"></component>
     </div>
 
     <script src="assets/js/app.js"></script>
