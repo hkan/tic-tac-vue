@@ -39,11 +39,14 @@
 
         computed: {
             isAllCellsChecked() {
-                return this.state.reduce((rowResult, row) => {
-                    return rowResult && row.reduce((cellResult, cell) => {
-                        return cellResult && cell != 'empty'
-                    })
+                var flat = _.flatten(this.state),
+                    emptyCell;
+
+                emptyCell = _.find(flat, el => {
+                    return el == 'empty'
                 })
+
+                return emptyCell != 'empty'
             },
 
             horizontalTriple() {
