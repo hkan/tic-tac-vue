@@ -3,20 +3,20 @@
         <h1>Hey, {{ $root.user.username }}!</h1>
 
         <p class="control">
-            <button class="button" @click="random" :disabled="matching">
-                match a random opponent
-            </button>
-
             <span class="help is-danger" v-show="randomError">
                 {{ randomError }}
             </span>
         </p>
 
         <p class="control">
-            <input type="text" class="input" v-model="username">
+            <input type="text" class="input" v-model="username" :disabled="matching">
 
-            <button class="button" @click="user" :disabled="!username.length || matching" style="margin-top: 5px">
-                match with him/her ^
+            <button class="button is-primary" @click="user" :disabled="!username.length || matching" style="margin-top: 5px">
+                <span v-if="matching">waiting for {{ username }}'s response</span>
+                <span v-else>
+                    <span v-if="username.length">send request to {{ username }}</span>
+                    <span v-else>type in your friend's username to above</span>
+                </span>
             </button>
 
             <span class="help is-danger" v-show="usernameError">
@@ -44,12 +44,19 @@
 
             user() {
                 this.$root.socket.emit('match-with', this.username)
+                this.matching = true
             },
         },
 
         ready() {
             this.$root.socket.on('match-failed', response => {
                 this.usernameError = response
+            })
+
+            this.$root.socket.on('match-denied', response => {
+                alert(this.username + ' denied your request')
+                this.usernameError = null
+                this.matching = false
             })
         }
     }

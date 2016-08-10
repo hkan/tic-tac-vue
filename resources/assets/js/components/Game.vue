@@ -11,6 +11,10 @@
         components: {
             TicTacToe,
         },
+
+        ready() {
+            this.$dispatch('game-component-ready')
+        }
     }
 </script>
 

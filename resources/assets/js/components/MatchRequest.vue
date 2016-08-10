@@ -32,13 +32,13 @@
 
         methods: {
             deny() {
-                //
+                this.$root.socket.emit('match-deny')
             },
 
             accept() {
-                //
+                this.$root.socket.emit('match-confirm')
             }
-        }
+        },
     })
 </script>
 

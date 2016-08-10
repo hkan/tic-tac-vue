@@ -159,6 +159,19 @@ io.on('connection', function (socket) {
         opponent.emit('match-request', {username: socket.username})
     })
 
+    socket.on('match-deny', function () {
+        var opponent = socket.gotMatchRequestedBy
+
+        if (!opponent) {
+            return
+        }
+
+        // Clean up match request
+        delete socket.gotMatchRequestedBy
+
+        opponent.emit('match-denied')
+    })
+
     /**
      * When user confirms the incoming match request.
      */

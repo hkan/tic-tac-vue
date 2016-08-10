@@ -15,7 +15,8 @@ new Vue({
         currentView: 'welcome',
         socket: null,
         connected: false,
-        user: null
+        user: null,
+        matchRequest: null
     },
 
     components: {
@@ -41,10 +42,14 @@ new Vue({
             this.socket.emit('register', data)
         },
 
+        'game-component-ready'() {
+            this.socket.emit('ready-to-begin')
+        },
+
         'user-ready'(user) {
             this.user = user
             this.currentView = 'ready'
-        }
+        },
     },
 
     ready() {
@@ -64,11 +69,20 @@ new Vue({
         })
 
         this.socket.on('match-request', data => {
-            var component = new MatchRequest({
+            this.matchRequest = new MatchRequest({
                 data,
                 parent: this
             })
-            component.$mount().$appendTo(document.body)
+            this.matchRequest.$mount().$appendTo(document.body)
+        })
+
+        this.socket.on('match-successful', () => {
+            if (this.matchRequest) {
+                this.matchRequest.$remove();
+                this.$set('matchRequest', null)
+            }
+
+            this.currentView = 'game'
         })
 
         this.socket.on('restart', data => {
@@ -90,6 +104,7 @@ new Vue({
         this.socket.on('opponent-disconnected', () => {
             this.opponent = null
             this.$broadcast('opponent-disconnected')
+            this.currentView = 'ready'
         })
 
         this.socket.on('opponent-played', (row, column) => {
