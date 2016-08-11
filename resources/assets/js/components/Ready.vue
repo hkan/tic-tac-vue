@@ -51,6 +51,7 @@
         ready() {
             this.$root.socket.on('match-failed', response => {
                 this.usernameError = response
+                this.matching = false
             })
 
             this.$root.socket.on('match-denied', response => {
