@@ -16,6 +16,7 @@ new Vue({
         socket: null,
         connected: false,
         user: null,
+        opponent: null,
         matchRequest: null
     },
 
