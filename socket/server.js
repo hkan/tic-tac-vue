@@ -118,6 +118,11 @@ io.on('connection', function (socket) {
     })
 
     socket.on('register', function (data) {
+        if (socket.username && socket.username.length) {
+            socket.emit('register-failed', 'Already registered.')
+            return
+        }
+
         var regExp = new RegExp(/^[a-zA-Z0-9]+$/g)
 
         if (! regExp.test(data.username)) {
