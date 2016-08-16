@@ -1,6 +1,6 @@
 # Tic-Tac-Vue
 
-Tic-Tac-Vue is an online tic-tac-toe game built with Vue.js framework.
+Tic-Tac-Vue is an online tic-tac-toe game built with Vue.js framework. A live version of the game can be found [here](http://tictacvue.xyz/).
 
 ## Contributing
 
