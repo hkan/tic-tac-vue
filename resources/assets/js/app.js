@@ -2,6 +2,7 @@ import Socket from 'socket.io-client'
 import Vue from 'vue'
 
 import Game from './components/Game.vue'
+import Leaderboard from './components/Leaderboard.vue'
 import Welcome from './components/Welcome.vue'
 import Ready from './components/Ready.vue'
 import MatchRequest from './components/MatchRequest.vue'
@@ -12,16 +13,16 @@ new Vue({
     el: '#app',
 
     data: {
-        currentView: 'welcome',
+        currentView: 'leaderboard',
         socket: null,
         connected: false,
         user: null,
-        opponent: null,
         matchRequest: null
     },
 
     components: {
         Game,
+        Leaderboard,
         Welcome,
         Ready,
     },
