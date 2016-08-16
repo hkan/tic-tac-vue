@@ -123,6 +123,13 @@ io.on('connection', function (socket) {
             return
         }
 
+        var regExp = new RegExp(/^[a-zA-Z0-9]+$/g)
+
+        if (! regExp.test(data.username)) {
+            socket.emit('register-failed', 'Invalid username.')
+            return
+        }
+
         var client = findByUsername(data.username)
 
         if (client) {
