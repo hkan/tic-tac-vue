@@ -31,6 +31,12 @@
                 this.$set('data', data)
             }
         },
+
+        ready() {
+            this.$root.socket.on('leaderboard-data', (data) => {
+                this.$emit('leaderboard-data', data)
+            })
+        },
     }
 </script>
 

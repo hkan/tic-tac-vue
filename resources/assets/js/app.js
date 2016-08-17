@@ -120,9 +120,5 @@ new Vue({
         this.socket.on('opponent-wants-again', () => {
             this.$emit('opponent-wants-again')
         })
-
-        this.socket.on('leaderboard-data', (data) => {
-            this.$broadcast('leaderboard-data', data)
-        })
     }
 })
