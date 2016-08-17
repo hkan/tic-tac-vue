@@ -74,8 +74,8 @@ function startGame(socket, opponent) {
     socket.gameRoom = room
 
     // tell both parties about the game
-    socket.emit('game', {opponent: opponent.id.replace('/#', ''), game: opponent.gameRoom, starts: true})
-    opponent.emit('game', {opponent: socket.id.replace('/#', ''), game: opponent.gameRoom, starts: false})
+    socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.gameRoom, starts: true})
+    opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.gameRoom, starts: false})
 
     socket.started = true
     opponent.started = false
@@ -120,6 +120,13 @@ io.on('connection', function (socket) {
     socket.on('register', function (data) {
         if (socket.username && socket.username.length) {
             socket.emit('register-failed', 'Already registered.')
+            return
+        }
+
+        var regExp = new RegExp(/^[a-zA-Z0-9]+$/g)
+
+        if (! regExp.test(data.username)) {
+            socket.emit('register-failed', 'Invalid username.')
             return
         }
 

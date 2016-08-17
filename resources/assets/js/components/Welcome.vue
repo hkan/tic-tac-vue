@@ -51,6 +51,7 @@
             },
 
             'register-failed'(response) {
+                this.username = ''
                 this.loading = false
                 this.failResponse = response
             },
