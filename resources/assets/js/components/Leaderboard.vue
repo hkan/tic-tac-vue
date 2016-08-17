@@ -1,25 +1,17 @@
 <template>
-    <div class="leaderboard">
-        <h1>Leaderboard</h1>
-
-        <table class="table is-bordered">
+<div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Won</th>
-                    <th>Lost</th>
+                    <td>Username</td>
+                    <td class="has-text-right">W / L</td>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <th>andreaselia</th>
-                    <th>10</th>
-                    <th>0</th>
-                </tr>
-                <tr>
-                    <th>hkan</th>
-                    <th>0</th>
-                    <th>10</th>
+                <tr v-for="item in $root.leaderboard">
+                    <td>{{ item.name }}</td>
+                    <td class="has-text-right">{{ item.won }} / {{ item.lost }}</td>
                 </tr>
             </tbody>
         </table>
@@ -27,15 +19,49 @@
 </template>
 
 <script>
-    import _ from 'lodash'
-
     export default {
-
+        ready() {
+        }
     }
 </script>
 
-<style lang="scss">
-    .leaderboard {
-        margin: 50px 0;
+<style lang="scss" scoped>
+    #leaderboard {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        width: 300px;
+        background-color: #eee;
+        text-align: center;
+        padding: 40px 10px 0;
+        -webkit-box-shadow: -2px 0px 4px 0px #cecece;
+        -moz-box-shadow: -2px 0px 4px 0px #cecece;
+        box-shadow: -2px 0px 4px 0px #cecece;
+
+        h2 {
+            color: #545454;
+        }
+
+        .table {
+            background: none;
+            margin: 30px 0 0;
+            border: none;
+            color: #545454;
+
+            td, th {
+                border: none;
+            }
+
+            thead {
+                td, th {
+                    color: inherit;
+                }
+            }
+        }
+
+        @media (max-width: 991px) {
+            display: none;
+        }
     }
 </style>

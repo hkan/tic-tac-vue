@@ -24,8 +24,6 @@
                     >Start</button>
                 </p>
             </form>
-
-            <a href="">View Leaderboards</a>
         </div>
     </div>
 </template>
