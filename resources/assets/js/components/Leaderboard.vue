@@ -1,5 +1,5 @@
 <template>
-<div id="leaderboard">
+    <div id="leaderboard">
         <h2>Leaderboard</h2>
         <table class="table">
             <thead>
@@ -9,7 +9,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in $root.leaderboard">
+                <tr v-for="item in data">
                     <td>{{ item.username }}</td>
                     <td class="has-text-right">{{ item.won }} / {{ item.lost }}</td>
                 </tr>
@@ -20,48 +20,62 @@
 
 <script>
     export default {
-        ready() {
-        }
+        data() {
+            return {
+                data: {}
+            }
+        },
+
+        events: {
+            'leaderboard-data'(data) {
+                this.$set('data', data)
+            }
+        },
     }
 </script>
 
 <style lang="scss" scoped>
     #leaderboard {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        top: 0;
-        width: 300px;
-        background-color: #eee;
+        flex: 0 0 300px;
+        background-color: #fbfbfb;
         text-align: center;
-        padding: 40px 10px 0;
-        -webkit-box-shadow: -2px 0px 4px 0px #cecece;
-        -moz-box-shadow: -2px 0px 4px 0px #cecece;
-        box-shadow: -2px 0px 4px 0px #cecece;
+        padding: 40px 20px 0;
+        margin-right: -10px;
+        box-shadow: inset 0 0 6px 0 rgba(#000, .2);
 
         h2 {
-            color: #545454;
+            color: #888;
+            font-weight: 700;
         }
 
         .table {
             background: none;
             margin: 30px 0 0;
             border: none;
-            color: #545454;
+            color: #888;
 
             td, th {
                 border: none;
             }
 
             thead {
-                td, th {
-                    color: inherit;
+                tr {
+                    &:hover {
+                        background: none;
+                    }
+
+                    th {
+                        font-weight: 700;
+                        color: inherit;
+                    }
                 }
             }
-        }
 
-        @media (max-width: 991px) {
-            display: none;
+            tbody {
+                td {
+                    cursor: default;
+                }
+            }
         }
     }
 </style>

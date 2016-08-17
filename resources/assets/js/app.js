@@ -18,7 +18,6 @@ new Vue({
         connected: false,
         user: null,
         matchRequest: null,
-        leaderboard: null
     },
 
     components: {
@@ -57,18 +56,10 @@ new Vue({
         'game-over'(winner) {
             this.socket.emit('game-over')
         },
-
-        'leaderboard-data'(str) {
-            this.leaderboard = str
-        },
-
-        'leaderboard-update'(str) {
-            this.leaderboard = str
-        },
     },
 
     ready() {
-        this.socket = new Socket('http://' + window.location.host + ':3080')
+        this.socket = new Socket('http://' + window.location.hostname + ':3080')
 
         this.socket.on('connect', () => {
             this.$set('connected', true)
@@ -131,11 +122,7 @@ new Vue({
         })
 
         this.socket.on('leaderboard-data', (data) => {
-            this.$emit('leaderboard-data', data)
-        })
-
-        this.socket.on('leaderboard-update', (data) => {
-            this.$emit('leaderboard-update', data)
+            this.$broadcast('leaderboard-data', data)
         })
     }
 })

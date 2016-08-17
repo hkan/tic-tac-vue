@@ -1,7 +1,7 @@
 var elixir = require('laravel-elixir')
 require('laravel-elixir-vueify')
 
-elixir.config.publicPath = './'
+elixir.config.publicPath = '.'
 
 /*
  |--------------------------------------------------------------------------
@@ -29,7 +29,9 @@ elixir(function(mix) {
     */
     mix.browserSync({
         files: [
-            elixir.config.publicPath + '/assets/**/*'
+            elixir.config.publicPath + '/assets/**/*',
+            elixir.config.publicPath + '/*.html',
+            elixir.config.publicPath + '/*.php',
         ],
         proxy: 'tic-tac-vue.dev',
         notify: false

@@ -68,7 +68,8 @@
 
 <style lang="scss" scoped>
     .welcome {
-        margin: 50px 0;
+        margin: 50px auto;
+        width: 300px;
 
         form {
             [type="submit"] {

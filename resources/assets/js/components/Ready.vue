@@ -8,21 +8,23 @@
             </span>
         </p>
 
-        <p class="control">
-            <input type="text" class="input" v-model="username" :disabled="matching">
+        <form @submit.prevent="user">
+            <p class="control">
+                <input type="text" class="input" v-model="username" :disabled="matching">
 
-            <span class="help is-danger" v-show="usernameError">
-                {{ usernameError }}
-            </span>
-
-            <button class="button is-primary" @click="user" :disabled="!username.length || matching" style="margin-top: 5px">
-                <span v-if="matching">waiting for {{ username }}'s response</span>
-                <span v-else>
-                    <span v-if="username.length">send request to {{ username }}</span>
-                    <span v-else>type in your friend's username to above</span>
+                <span class="help is-danger" v-show="usernameError">
+                    {{ usernameError }}
                 </span>
-            </button>
-        </p>
+
+                <button class="button is-primary" type="submit" :disabled="!username.length || matching" style="margin-top: 5px">
+                    <span v-if="matching">waiting for {{ username }}'s response</span>
+                    <span v-else>
+                        <span v-if="username.length">send request to {{ username }}</span>
+                        <span v-else>type in your friend's username to above</span>
+                    </span>
+                </button>
+            </p>
+        </form>
     </div>
 </template>
 
@@ -59,13 +61,16 @@
                 this.usernameError = null
                 this.matching = false
             })
+
+            this.$el.querySelector('.input').focus()
         }
     }
 </script>
 
 <style lang="scss" scoped>
     .ready {
-        margin: 50px 0;
+        margin: 50px auto;
+        width: 300px;
 
         .button {
             width: 100%

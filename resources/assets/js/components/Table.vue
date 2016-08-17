@@ -30,7 +30,7 @@
 
 <style lang="scss" scoped>
     .tic-tac-toe-table {
-        width: 100%;
+        width: 300px;
         margin: 50px auto 30px;
 
         .row {

@@ -14,14 +14,20 @@
 
     <style media="screen">
         html, body {
-            background: #fff
+            background: #fff;
+            height: 100%;
         }
 
         #app {
             width: 100%;
-            max-width: 330px;
-            padding: 0 15px;
+            height: 100%;
             margin: 0 auto;
+            display: flex;
+        }
+
+        #app > .main-view {
+            padding: 0 15px;
+            flex: 1;
         }
     </style>
 
@@ -34,7 +40,9 @@
 
 <body class="content">
     <div id="app">
-        <component :is="currentView"></component>
+        <div class="main-view">
+            <component :is="currentView"></component>
+        </div>
         <leaderboard></leaderboard>
     </div>
 
