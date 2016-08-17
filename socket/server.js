@@ -16,9 +16,13 @@ var PouchDB = require('pouchdb')
 var db = new PouchDB('tic-tac-vue')
 
 var leaderboard = [{
-    name: 'test',
-    won: 20,
-    lost: 40
+    username: 'test',
+    won: 0,
+    lost: 0
+}, {
+    username: 'west',
+    won: 0,
+    lost: 0
 }]
 
 /*
@@ -274,14 +278,29 @@ io.on('connection', function (socket) {
     /**
      * The game has ended so we update the leaderboard.
      */
-    socket.on('game-over', function () {
+    socket.on('game-over', function (winner, current) {
         // db.get('leaderboard').then(function (response) {
         //     console.log(response.data);
         // }).catch(function () {
         //     db.put({ _id: 'leaderboard', data: [{ user: { id: 1, username: 'testing' } }] });
         //     console.log(db);
         // });
-        socket.broadcast.to(socket.gameRoom)
-            .emit('leaderboard-updated')
+
+        for (var i = 0; i < leaderboard.length; i++) {
+            if (winner == 'home') {
+                if (leaderboard[i].username == current.username) {
+                    leaderboard[i].won += 1
+                    io.emit('leaderboard-update', leaderboard)
+                    return
+                }
+            }
+            else if (winner == 'away') {
+                if (leaderboard[i].username == opponent.username) {
+                    leaderboard[i].won += 1
+                    io.emit('leaderboard-update', leaderboard)
+                    return
+                }
+            }
+        }
     })
 })

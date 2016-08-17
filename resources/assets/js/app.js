@@ -54,11 +54,15 @@ new Vue({
             this.currentView = 'ready'
         },
 
-        'game-over'(winner) {
-            this.socket.emit('game-over', winner)
+        'game-over'(winner, user) {
+            this.socket.emit('game-over', winner, user)
         },
 
         'leaderboard-data'(str) {
+            this.leaderboard = str
+        },
+
+        'leaderboard-update'(str) {
             this.leaderboard = str
         },
     },
@@ -128,6 +132,10 @@ new Vue({
 
         this.socket.on('leaderboard-data', (data) => {
             this.$emit('leaderboard-data', data)
+        })
+
+        this.socket.on('leaderboard-update', (data) => {
+            this.$emit('leaderboard-update', data)
         })
     }
 })

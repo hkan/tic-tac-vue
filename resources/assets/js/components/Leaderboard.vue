@@ -10,7 +10,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in $root.leaderboard">
-                    <td>{{ item.name }}</td>
+                    <td>{{ item.username }}</td>
                     <td class="has-text-right">{{ item.won }} / {{ item.lost }}</td>
                 </tr>
             </tbody>

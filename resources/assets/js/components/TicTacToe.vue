@@ -141,13 +141,13 @@
             homeWins() {
                 this.won = 'home'
                 this.over = true
-                this.$dispatch('game-over', this.won)
+                this.$dispatch('game-over', this.won, this.user)
             },
 
             awayWins() {
                 this.won = 'away'
                 this.over = true
-                this.$dispatch('game-over', this.won)
+                this.$dispatch('game-over', this.won, this.user)
             },
 
             tie() {
