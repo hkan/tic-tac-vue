@@ -1,5 +1,5 @@
 /.idea
 /node_modules
 /assets
+/tic-tac-vue
 .DS_Store
-tic-tac-vue
