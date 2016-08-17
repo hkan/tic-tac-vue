@@ -54,8 +54,8 @@ new Vue({
             this.currentView = 'ready'
         },
 
-        'game-over'(winner, user) {
-            this.socket.emit('game-over', winner, user)
+        'game-over'(winner) {
+            this.socket.emit('game-over', winner)
         },
 
         'leaderboard-data'(str) {

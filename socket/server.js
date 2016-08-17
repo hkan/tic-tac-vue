@@ -278,7 +278,7 @@ io.on('connection', function (socket) {
     /**
      * The game has ended so we update the leaderboard.
      */
-    socket.on('game-over', function (winner, current) {
+    socket.on('game-over', function (winner) {
         // db.get('leaderboard').then(function (response) {
         //     console.log(response.data);
         // }).catch(function () {
@@ -286,21 +286,10 @@ io.on('connection', function (socket) {
         //     console.log(db);
         // });
 
-        for (var i = 0; i < leaderboard.length; i++) {
-            if (winner == 'home') {
-                if (leaderboard[i].username == current.username) {
-                    leaderboard[i].won += 1
-                    io.emit('leaderboard-update', leaderboard)
-                    return
-                }
-            }
-            else if (winner == 'away') {
-                if (leaderboard[i].username == opponent.username) {
-                    leaderboard[i].won += 1
-                    io.emit('leaderboard-update', leaderboard)
-                    return
-                }
-            }
-        }
+        // test - score increases by 2 :confused:
+        leaderboard[0].won += 1
+        leaderboard[1].lost += 1
+
+        io.emit('leaderboard-update', leaderboard)
     })
 })
