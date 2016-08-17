@@ -15,15 +15,15 @@ var io = require('socket.io')(http)
 var PouchDB = require('pouchdb')
 var db = new PouchDB('tic-tac-vue')
 
-var leaderboard = [{
-    username: 'test',
-    won: 0,
-    lost: 0
-}, {
-    username: 'west',
-    won: 0,
-    lost: 0
-}]
+db.get('leaderboard')
+    .catch(function (error) {
+        if (error.status == 404) {
+            db.put({
+                _id: 'leaderboard',
+                data: {}
+            })
+        }
+    })
 
 /*
  |--------------------------------------------------------------------------
@@ -99,7 +99,17 @@ function startGame(socket, opponent) {
 
 // New socket client
 io.on('connection', function (socket) {
-    socket.emit('leaderboard-data', leaderboard)
+    db.get('leaderboard').then(function (document) {
+        socket.emit('leaderboard-data', document.data)
+    })
+
+    var changes = db.changes({
+        since: 'now',
+        live: true,
+        include_docs: true
+    }).on('change', function(response) {
+        io.emit('leaderboard-data', response.doc.data)
+    })
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
@@ -112,6 +122,8 @@ io.on('connection', function (socket) {
     }
 
     socket.on('disconnect', function () {
+        changes.cancel();
+
         if (socket.opponent) {
             socket.opponent.emit('opponent-disconnected')
 
@@ -278,18 +290,43 @@ io.on('connection', function (socket) {
     /**
      * The game has ended so we update the leaderboard.
      */
-    socket.on('game-over', function (winner) {
-        // db.get('leaderboard').then(function (response) {
-        //     console.log(response.data);
-        // }).catch(function () {
-        //     db.put({ _id: 'leaderboard', data: [{ user: { id: 1, username: 'testing' } }] });
-        //     console.log(db);
-        // });
+    socket.on('game-over', function (won) {
+        if (!socket.opponent) {
+            return
+        }
 
-        // test - score increases by 2 :confused:
-        leaderboard[0].won += 1
-        leaderboard[1].lost += 1
+        db.get('leaderboard').then(function (response) {
+            var current = response.data
 
-        io.emit('leaderboard-update', leaderboard)
+            if (!current[socket.username]) {
+                current[socket.username] = {
+                    username: socket.username,
+                    won: 0,
+                    lost: 0
+                }
+            }
+
+            if (!current[socket.opponent.username]) {
+                current[socket.opponent.username] = {
+                    username: socket.opponent.username,
+                    won: 0,
+                    lost: 0
+                }
+            }
+
+            if (won) {
+                current[socket.username].won++
+                current[socket.opponent.username].lost++
+            } else {
+                current[socket.username].lost++
+                current[socket.opponent.username].won++
+            }
+
+            return db.put({
+                _id: 'leaderboard',
+                _rev: response._rev,
+                data: current
+            })
+        })
     })
 })

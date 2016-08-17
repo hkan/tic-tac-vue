@@ -34,6 +34,7 @@
 
         ready() {
             this.$root.socket.on('leaderboard-data', (data) => {
+                console.log(data)
                 this.$emit('leaderboard-data', data)
             })
         },

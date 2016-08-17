@@ -14,7 +14,7 @@ new Vue({
 
     data: {
         currentView: 'welcome',
-        socket: null,
+        socket: new Socket('http://' + window.location.hostname + ':3080', {autoConnect: false}),
         connected: false,
         user: null,
         matchRequest: null,
@@ -59,11 +59,11 @@ new Vue({
     },
 
     ready() {
-        this.socket = new Socket('http://' + window.location.hostname + ':3080')
-
         this.socket.on('connect', () => {
             this.$set('connected', true)
         })
+
+        this.socket.connect()
 
         this.socket.on('game', (data) => {
             this.opponent = data.opponent
