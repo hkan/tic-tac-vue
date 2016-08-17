@@ -11,6 +11,10 @@
         <p class="control">
             <input type="text" class="input" v-model="username" :disabled="matching">
 
+            <span class="help is-danger" v-show="usernameError">
+                {{ usernameError }}
+            </span>
+
             <button class="button is-primary" @click="user" :disabled="!username.length || matching" style="margin-top: 5px">
                 <span v-if="matching">waiting for {{ username }}'s response</span>
                 <span v-else>
@@ -18,10 +22,6 @@
                     <span v-else>type in your friend's username to above</span>
                 </span>
             </button>
-
-            <span class="help is-danger" v-show="usernameError">
-                {{ usernameError }}
-            </span>
         </p>
     </div>
 </template>

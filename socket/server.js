@@ -11,6 +11,20 @@ var http = require('http').Server(app)
 // Socket.io
 var io = require('socket.io')(http)
 
+// PouchDB
+var PouchDB = require('pouchdb')
+var db = new PouchDB('tic-tac-vue')
+
+var leaderboard = [{
+    username: 'test',
+    won: 0,
+    lost: 0
+}, {
+    username: 'west',
+    won: 0,
+    lost: 0
+}]
+
 /*
  |--------------------------------------------------------------------------
  | Application
@@ -74,8 +88,8 @@ function startGame(socket, opponent) {
     socket.gameRoom = room
 
     // tell both parties about the game
-    socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.gameRoom, starts: true})
-    opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.gameRoom, starts: false})
+    socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.gameRoom, starts: true })
+    opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.gameRoom, starts: false })
 
     socket.started = true
     opponent.started = false
@@ -85,6 +99,7 @@ function startGame(socket, opponent) {
 
 // New socket client
 io.on('connection', function (socket) {
+    socket.emit('leaderboard-data', leaderboard)
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
@@ -151,6 +166,11 @@ io.on('connection', function (socket) {
 
         if (!opponent) {
             socket.emit('match-failed', 'User not available.')
+            return
+        }
+
+        if (opponent.username == socket.username) {
+            socket.emit('match-failed', 'User is you.')
             return
         }
 
@@ -253,5 +273,23 @@ io.on('connection', function (socket) {
 
         socket.broadcast.to(socket.gameRoom)
             .emit('opponent-wants-again')
+    })
+
+    /**
+     * The game has ended so we update the leaderboard.
+     */
+    socket.on('game-over', function (winner) {
+        // db.get('leaderboard').then(function (response) {
+        //     console.log(response.data);
+        // }).catch(function () {
+        //     db.put({ _id: 'leaderboard', data: [{ user: { id: 1, username: 'testing' } }] });
+        //     console.log(db);
+        // });
+
+        // test - score increases by 2 :confused:
+        leaderboard[0].won += 1
+        leaderboard[1].lost += 1
+
+        io.emit('leaderboard-update', leaderboard)
     })
 })

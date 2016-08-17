@@ -1,6 +1,7 @@
 import Socket from 'socket.io-client'
 import Vue from 'vue'
 
+import Leaderboard from './components/Leaderboard.vue'
 import Game from './components/Game.vue'
 import Welcome from './components/Welcome.vue'
 import Ready from './components/Ready.vue'
@@ -16,11 +17,12 @@ new Vue({
         socket: null,
         connected: false,
         user: null,
-        opponent: null,
-        matchRequest: null
+        matchRequest: null,
+        leaderboard: null
     },
 
     components: {
+        Leaderboard,
         Game,
         Welcome,
         Ready,
@@ -50,6 +52,18 @@ new Vue({
         'user-ready'(user) {
             this.user = user
             this.currentView = 'ready'
+        },
+
+        'game-over'(winner) {
+            this.socket.emit('game-over')
+        },
+
+        'leaderboard-data'(str) {
+            this.leaderboard = str
+        },
+
+        'leaderboard-update'(str) {
+            this.leaderboard = str
         },
     },
 
@@ -114,6 +128,14 @@ new Vue({
 
         this.socket.on('opponent-wants-again', () => {
             this.$emit('opponent-wants-again')
+        })
+
+        this.socket.on('leaderboard-data', (data) => {
+            this.$emit('leaderboard-data', data)
+        })
+
+        this.socket.on('leaderboard-update', (data) => {
+            this.$emit('leaderboard-update', data)
         })
     }
 })
