@@ -13,22 +13,10 @@ var io = require('socket.io')(http)
 
 // lowdb
 var low = require('lowdb')
-const db = low('db')
+const db = low('db.json')
 
 // setup the db
 db.defaults({ leaderboard: [] }).value()
-
-// reset the db
-// db.set('leaderboard', []).value()
-
-// username: 'hkan', won: 2, lost: 1
-// username: 'andreaselia', won: 1, lost: 2
-
-// add test data to the db
-// db.get('leaderboard').push({ username: 'andreaselia', won: 1, lost: 2 }).value();
-// db.get('leaderboard').push({ username: 'hkan', won: 2, lost: 1 }).value();
-
-console.log(JSON.stringify(db.getState(), null, 2))
 
 /*
  |--------------------------------------------------------------------------
@@ -289,36 +277,26 @@ io.on('connection', function (socket) {
             return
         }
 
-        var currentUser = db.get('leaderboard').find({ username: socket.username }).value();
-        var opponentUser = db.get('leaderboard').find({ username: socket.opponent.username }).value();
+        var leaderboardCheck = db.get('leaderboard').find({ username: socket.username }).value();
 
-        if (currentUser == 'undefined') {
-            db.get('leaderboard').push({ username: socket.username, won: 0, lost: 0 }).value();
-        }
+        console.log(socket.username, (leaderboardCheck == undefined))
 
-        if (opponentUser == 'undefined') {
-            db.get('leaderboard').push({ username: socket.opponent.username, won: 0, lost: 0 }).value();
+        if (leaderboardCheck == undefined) {
+            db.get('leaderboard').push({ username: socket.username, won: 0, lost: 0 }).value()
+            leaderboardCheck = db.get('leaderboard').find({ username: socket.username }).value()
         }
 
         if (won) {
-            // update current user won
-            db.get('leaderboard').find({ username: socket.username })
-                .assign({ won: currentUser.won + 1 })
-                .value()
+            var currentWon = db.get('leaderboard').find({ username: socket.username }).value().won
 
-            // update opponent user lost
-            db.get('leaderboard').find({ username: socket.opponent.username })
-                .assign({ lost: opponentUser.lost + 1 })
+            db.get('leaderboard').find({ username: socket.username })
+                .assign({ won: currentWon + 1 })
                 .value()
         } else {
-            // update current user won
-            db.get('leaderboard').find({ username: socket.username })
-                .assign({ won: currentUser.lost + 1 })
-                .value()
+            var currentLost = db.get('leaderboard').find({ username: socket.username }).value().lost
 
-            // update opponent user won
-            db.get('leaderboard').find({ username: socket.opponent.username })
-                .assign({ lost: opponentUser.won + 1 })
+            db.get('leaderboard').find({ username: socket.username })
+                .assign({ won: currentLost + 1 })
                 .value()
         }
 
