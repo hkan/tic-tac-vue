@@ -18,18 +18,6 @@ const db = low('db')
 // setup the db
 db.defaults({ leaderboard: [] }).value()
 
-// reset the db
-// db.set('leaderboard', []).value()
-
-// username: 'hkan', won: 2, lost: 1
-// username: 'andreaselia', won: 1, lost: 2
-
-// add test data to the db
-// db.get('leaderboard').push({ username: 'andreaselia', won: 1, lost: 2 }).value();
-// db.get('leaderboard').push({ username: 'hkan', won: 2, lost: 1 }).value();
-
-console.log(JSON.stringify(db.getState(), null, 2))
-
 /*
  |--------------------------------------------------------------------------
  | Application
