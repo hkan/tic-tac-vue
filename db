@@ -1,0 +1,14 @@
+{
+  "leaderboard": [
+    {
+      "username": "andreaselia",
+      "won": 1,
+      "lost": 2
+    },
+    {
+      "username": "hkan",
+      "won": 2,
+      "lost": 1
+    }
+  ]
+}

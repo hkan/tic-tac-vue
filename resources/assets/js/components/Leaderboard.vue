@@ -9,7 +9,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in data">
+                {{ data | json }}
+
+                <tr v-for="item in data['leaderboard']">
                     <td>{{ item.username }}</td>
                     <td class="has-text-right">{{ item.won }} / {{ item.lost }}</td>
                 </tr>

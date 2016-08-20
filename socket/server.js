@@ -11,19 +11,18 @@ var http = require('http').Server(app)
 // Socket.io
 var io = require('socket.io')(http)
 
-// PouchDB
-var PouchDB = require('pouchdb')
-var db = new PouchDB('tic-tac-vue')
+// lowdb
+var low = require('lowdb')
+const db = low('db')
 
-db.get('leaderboard')
-    .catch(function (error) {
-        if (error.status == 404) {
-            db.put({
-                _id: 'leaderboard',
-                data: {}
-            })
-        }
-    })
+db.defaults({ leaderboard: [] }).value()
+
+db.set('leaderboard', []).value()
+
+db.get('leaderboard').push({ username: 'andreaselia', won: 1, lost: 2 }).value();
+db.get('leaderboard').push({ username: 'hkan', won: 2, lost: 1 }).value();
+
+console.log(JSON.stringify(db.getState(), null, 2))
 
 /*
  |--------------------------------------------------------------------------
@@ -99,17 +98,8 @@ function startGame(socket, opponent) {
 
 // New socket client
 io.on('connection', function (socket) {
-    db.get('leaderboard').then(function (document) {
-        socket.emit('leaderboard-data', document.data)
-    })
-
-    var changes = db.changes({
-        since: 'now',
-        live: true,
-        include_docs: true
-    }).on('change', function(response) {
-        io.emit('leaderboard-data', response.doc.data)
-    })
+    // Send the leaderboard data to the client
+    socket.emit('leaderboard-data', JSON.stringify(db.getState(), null, 2))
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
@@ -122,8 +112,6 @@ io.on('connection', function (socket) {
     }
 
     socket.on('disconnect', function () {
-        changes.cancel();
-
         if (socket.opponent) {
             socket.opponent.emit('opponent-disconnected')
 
@@ -294,39 +282,5 @@ io.on('connection', function (socket) {
         if (!socket.opponent) {
             return
         }
-
-        db.get('leaderboard').then(function (response) {
-            var current = response.data
-
-            if (!current[socket.username]) {
-                current[socket.username] = {
-                    username: socket.username,
-                    won: 0,
-                    lost: 0
-                }
-            }
-
-            if (!current[socket.opponent.username]) {
-                current[socket.opponent.username] = {
-                    username: socket.opponent.username,
-                    won: 0,
-                    lost: 0
-                }
-            }
-
-            if (won) {
-                current[socket.username].won++
-                current[socket.opponent.username].lost++
-            } else {
-                current[socket.username].lost++
-                current[socket.opponent.username].won++
-            }
-
-            return db.put({
-                _id: 'leaderboard',
-                _rev: response._rev,
-                data: current
-            })
-        })
     })
 })
