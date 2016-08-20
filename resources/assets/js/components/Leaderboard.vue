@@ -9,8 +9,6 @@
                 </tr>
             </thead>
             <tbody>
-                {{ data | json }}
-
                 <tr v-for="item in data['leaderboard']">
                     <td>{{ item.username }}</td>
                     <td class="has-text-right">{{ item.won }} / {{ item.lost }}</td>
@@ -30,7 +28,8 @@
 
         events: {
             'leaderboard-data'(data) {
-                this.$set('data', data)
+                this.$set('data', JSON.parse(data))
+
             }
         },
 
