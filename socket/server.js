@@ -15,12 +15,18 @@ var io = require('socket.io')(http)
 var low = require('lowdb')
 const db = low('db')
 
+// setup the db
 db.defaults({ leaderboard: [] }).value()
 
-db.set('leaderboard', []).value()
+// reset the db
+// db.set('leaderboard', []).value()
 
-db.get('leaderboard').push({ username: 'andreaselia', won: 1, lost: 2 }).value();
-db.get('leaderboard').push({ username: 'hkan', won: 2, lost: 1 }).value();
+// username: 'hkan', won: 2, lost: 1
+// username: 'andreaselia', won: 1, lost: 2
+
+// add test data to the db
+// db.get('leaderboard').push({ username: 'andreaselia', won: 1, lost: 2 }).value();
+// db.get('leaderboard').push({ username: 'hkan', won: 2, lost: 1 }).value();
 
 console.log(JSON.stringify(db.getState(), null, 2))
 
@@ -282,5 +288,41 @@ io.on('connection', function (socket) {
         if (!socket.opponent) {
             return
         }
+
+        var currentUser = db.get('leaderboard').find({ username: socket.username }).value();
+        var opponentUser = db.get('leaderboard').find({ username: socket.opponent.username }).value();
+
+        if (currentUser == 'undefined') {
+            db.get('leaderboard').push({ username: socket.username, won: 0, lost: 0 }).value();
+        }
+
+        if (opponentUser == 'undefined') {
+            db.get('leaderboard').push({ username: socket.opponent.username, won: 0, lost: 0 }).value();
+        }
+
+        if (won) {
+            // update current user won
+            db.get('leaderboard').find({ username: socket.username })
+                .assign({ won: currentUser.won + 1 })
+                .value()
+
+            // update opponent user lost
+            db.get('leaderboard').find({ username: socket.opponent.username })
+                .assign({ lost: opponentUser.lost + 1 })
+                .value()
+        } else {
+            // update current user won
+            db.get('leaderboard').find({ username: socket.username })
+                .assign({ won: currentUser.lost + 1 })
+                .value()
+
+            // update opponent user won
+            db.get('leaderboard').find({ username: socket.opponent.username })
+                .assign({ lost: opponentUser.won + 1 })
+                .value()
+        }
+
+        // Send the leaderboard data to the client
+        io.emit('leaderboard-data', JSON.stringify(db.getState(), null, 2))
     })
 })

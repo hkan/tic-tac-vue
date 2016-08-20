@@ -2,13 +2,13 @@
   "leaderboard": [
     {
       "username": "andreaselia",
-      "won": 1,
-      "lost": 2
+      "won": 9,
+      "lost": 8
     },
     {
       "username": "hkan",
-      "won": 2,
-      "lost": 1
+      "won": 8,
+      "lost": 9
     }
   ]
 }
