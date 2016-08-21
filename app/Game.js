@@ -15,6 +15,12 @@ Game.prototype.init = function () {
     this.setRoom()
     this.initTable()
 
+    this.home().game = game
+    this.away().game = game
+
+    this.home().opponent = this.away()
+    this.away().opponent = this.home()
+
     this.emit('ready')
 }
 
@@ -30,10 +36,26 @@ Game.prototype.setRoom = function () {
     // Create a new room
     this.room = 'game-' + Date.now()
 
+    // Join both parties into the room
+    this.home().join(this.room)
+    this.away().join(this.room)
+
     this.emit('room-created', this.room)
 }
 
 Game.prototype.destroy = function () {
+    // Clean up both player's game info
+    this.home().opponent = null
+    this.away().opponent = null
+
+    this.home().started = false
+    this.away().started = false
+
+    this.emit('before-destroy')
+
+    this.home().game = null
+    this.away().game = null
+
     this.emit('destroy')
 }
 
@@ -46,6 +68,8 @@ Game.prototype.check = function (row, column) {
     }
 
     this.data.table[row][column] = this.turn()
+
+    this.switchTurn()
 
     this.emit('cell-checked', row, column, this[this.turn()]())
 }

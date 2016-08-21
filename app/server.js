@@ -69,15 +69,9 @@ function startGame(socket, opponent) {
     var game = new Game(socket, opponent)
 
     game.on('ready', function () {
-        socket.game = game
-        opponent.game = game
-
-        socket.opponent = opponent
-        opponent.opponent = socket
-
         // tell both parties about the game
-        socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.gameRoom, starts: true })
-        opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.gameRoom, starts: false })
+        socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.game.room, starts: true })
+        opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.game.room, starts: false })
     })
 
     game.on('turn-switched', function (client) {
@@ -86,27 +80,12 @@ function startGame(socket, opponent) {
     })
 
     game.on('cell-checked', function (row, column, client) {
-        game.switchTurn()
-
         io.to(game.room)
             .emit('played', { row: row, column: column, username: client.username })
     })
 
-    game.on('room-created', function (roomName) {
-        // Join both parties into the room
-        socket.join(roomName)
-        opponent.join(roomName)
-    })
-
-    game.on('destroy', function () {
-        // TODO: let users about abort
-
-        // Clean up both player's game info
-        game.home().opponent = null
-        game.away().opponent = null
-
-        game.home().started = false
-        game.away().started = false
+    game.on('before-destroy', function () {
+        io.to(game.room).emit('abort-game')
     })
 
     game.init()
@@ -136,17 +115,15 @@ io.on('connection', function (socket) {
             return
         }
 
-        //try {
+        try {
             socket.game.check(row, column)
 
             socket.broadcast.to(socket.game.room)
                 .emit('opponent-played', { row: row, column: column })
-        // } catch (e) {
-        //     console.log(e)
-
-        //     // TODO: implement fail handler on front end
-        //     socket.emit('play-failed', { row: row, column: column })
-        // }
+        } catch (e) {
+            // TODO: implement fail handler on front end
+            socket.emit('play-failed', { row: row, column: column })
+        }
     })
 
     socket.on('register', function (data) {
