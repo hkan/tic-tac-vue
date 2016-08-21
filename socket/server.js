@@ -279,8 +279,6 @@ io.on('connection', function (socket) {
 
         var leaderboardCheck = db.get('leaderboard').find({ username: socket.username }).value();
 
-        console.log(socket.username, (leaderboardCheck == undefined))
-
         if (leaderboardCheck == undefined) {
             db.get('leaderboard').push({ username: socket.username, won: 0, lost: 0 }).value()
             leaderboardCheck = db.get('leaderboard').find({ username: socket.username }).value()
