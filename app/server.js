@@ -24,6 +24,8 @@ db.defaults({ leaderboard: [] }).value()
 |--------------------------------------------------------------------------
 */
 
+var Game = require('./Game')
+
 // Start HTTP Server
 http.listen(ENV.SOCKET_PORT)
 
