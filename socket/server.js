@@ -11,19 +11,12 @@ var http = require('http').Server(app)
 // Socket.io
 var io = require('socket.io')(http)
 
-// PouchDB
-var PouchDB = require('pouchdb')
-var db = new PouchDB('tic-tac-vue')
+// lowdb
+var low = require('lowdb')
+const db = low('db.json')
 
-db.get('leaderboard')
-    .catch(function (error) {
-        if (error.status == 404) {
-            db.put({
-                _id: 'leaderboard',
-                data: {}
-            })
-        }
-    })
+// setup the db
+db.defaults({ leaderboard: [] }).value()
 
 /*
  |--------------------------------------------------------------------------
@@ -99,17 +92,8 @@ function startGame(socket, opponent) {
 
 // New socket client
 io.on('connection', function (socket) {
-    db.get('leaderboard').then(function (document) {
-        socket.emit('leaderboard-data', document.data)
-    })
-
-    var changes = db.changes({
-        since: 'now',
-        live: true,
-        include_docs: true
-    }).on('change', function(response) {
-        io.emit('leaderboard-data', response.doc.data)
-    })
+    // Send the leaderboard data to the client
+    socket.emit('leaderboard-data', JSON.stringify(db.getState(), null, 2))
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
@@ -122,8 +106,6 @@ io.on('connection', function (socket) {
     }
 
     socket.on('disconnect', function () {
-        changes.cancel();
-
         if (socket.opponent) {
             socket.opponent.emit('opponent-disconnected')
 
@@ -295,38 +277,28 @@ io.on('connection', function (socket) {
             return
         }
 
-        db.get('leaderboard').then(function (response) {
-            var current = response.data
+        var leaderboardCheck = db.get('leaderboard').find({ username: socket.username }).value();
 
-            if (!current[socket.username]) {
-                current[socket.username] = {
-                    username: socket.username,
-                    won: 0,
-                    lost: 0
-                }
-            }
+        if (leaderboardCheck == undefined) {
+            db.get('leaderboard').push({ username: socket.username, won: 0, lost: 0 }).value()
+            leaderboardCheck = db.get('leaderboard').find({ username: socket.username }).value()
+        }
 
-            if (!current[socket.opponent.username]) {
-                current[socket.opponent.username] = {
-                    username: socket.opponent.username,
-                    won: 0,
-                    lost: 0
-                }
-            }
+        if (won) {
+            var currentWon = db.get('leaderboard').find({ username: socket.username }).value().won
 
-            if (won) {
-                current[socket.username].won++
-                current[socket.opponent.username].lost++
-            } else {
-                current[socket.username].lost++
-                current[socket.opponent.username].won++
-            }
+            db.get('leaderboard').find({ username: socket.username })
+                .assign({ won: currentWon + 1 })
+                .value()
+        } else {
+            var currentLost = db.get('leaderboard').find({ username: socket.username }).value().lost
 
-            return db.put({
-                _id: 'leaderboard',
-                _rev: response._rev,
-                data: current
-            })
-        })
+            db.get('leaderboard').find({ username: socket.username })
+                .assign({ won: currentLost + 1 })
+                .value()
+        }
+
+        // Send the leaderboard data to the client
+        io.emit('leaderboard-data', JSON.stringify(db.getState(), null, 2))
     })
 })

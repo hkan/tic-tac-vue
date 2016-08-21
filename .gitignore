@@ -3,3 +3,5 @@
 /assets
 /tic-tac-vue
 .DS_Store
+db
+db.json
