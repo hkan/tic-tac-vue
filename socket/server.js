@@ -93,7 +93,7 @@ function startGame(socket, opponent) {
 // New socket client
 io.on('connection', function (socket) {
     // Send the leaderboard data to the client
-    socket.emit('leaderboard-data', JSON.stringify(db.getState(), null, 2))
+    socket.emit('leaderboard-data', db.get('leaderboard').value())
 
     // This client is supposed to be an opponent to an existing game
     if (socket.opponent) {
@@ -299,6 +299,6 @@ io.on('connection', function (socket) {
         }
 
         // Send the leaderboard data to the client
-        io.emit('leaderboard-data', JSON.stringify(db.getState(), null, 2))
+        io.emit('leaderboard-data', db.get('leaderboard').value())
     })
 })

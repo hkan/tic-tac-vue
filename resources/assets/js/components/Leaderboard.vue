@@ -9,7 +9,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in data['leaderboard']">
+                <tr v-for="item in data">
                     <td>{{ item.username }}</td>
                     <td class="has-text-right">{{ item.won }} / {{ item.lost }}</td>
                 </tr>
@@ -28,14 +28,12 @@
 
         events: {
             'leaderboard-data'(data) {
-                this.$set('data', JSON.parse(data))
-
+                this.$set('data', data)
             }
         },
 
         ready() {
             this.$root.socket.on('leaderboard-data', (data) => {
-                console.log(data)
                 this.$emit('leaderboard-data', data)
             })
         },
