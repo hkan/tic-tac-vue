@@ -62,29 +62,54 @@ function startGame(socket, opponent) {
         return false
     }
 
-    if (opponent.gameRoom) {
+    if (opponent.game) {
         return false
     }
 
-    // Create a new room
-    room = 'game-' + Date.now()
+    var game = new Game(socket, opponent)
 
-    // Join both parties into the room
-    socket.join(room)
-    opponent.join(room)
+    game.on('ready', function () {
+        socket.game = game
+        opponent.game = game
 
-    socket.opponent = opponent
-    opponent.opponent = socket
+        socket.opponent = opponent
+        opponent.opponent = socket
 
-    opponent.gameRoom = room
-    socket.gameRoom = room
+        // tell both parties about the game
+        socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.gameRoom, starts: true })
+        opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.gameRoom, starts: false })
+    })
 
-    // tell both parties about the game
-    socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.gameRoom, starts: true })
-    opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.gameRoom, starts: false })
+    game.on('turn-switched', function (client) {
+        io.to(game.room)
+            .emit('turn', { username: client.username })
+    })
 
-    socket.started = true
-    opponent.started = false
+    game.on('cell-checked', function (row, column, client) {
+        game.switchTurn()
+
+        io.to(game.room)
+            .emit('played', { row: row, column: column, username: client.username })
+    })
+
+    game.on('room-created', function (roomName) {
+        // Join both parties into the room
+        socket.join(roomName)
+        opponent.join(roomName)
+    })
+
+    game.on('destroy', function () {
+        // TODO: let users about abort
+
+        // Clean up both player's game info
+        game.home().opponent = null
+        game.away().opponent = null
+
+        game.home().started = false
+        game.away().started = false
+    })
+
+    game.init()
 
     return true
 }
@@ -100,24 +125,28 @@ io.on('connection', function (socket) {
     })
 
     socket.on('disconnect', function () {
-        if (socket.opponent) {
-            socket.opponent.emit('opponent-disconnected')
-
-            socket.opponent.gameRoom = null
-            socket.opponent.opponent = null
-
-            socket.started = false
-            socket.opponent.started = false
-
-            socket.gameRoom = null
-            socket.opponent = null
+        if (socket.game) {
+            socket.game.destroy()
         }
     })
 
     // User checked one of the cells
     socket.on('play', function (row, column) {
-        socket.broadcast.to(socket.gameRoom)
-            .emit('opponent-played', {row:row, column:column})
+        if (!socket.game) {
+            return
+        }
+
+        //try {
+            socket.game.check(row, column)
+
+            socket.broadcast.to(socket.game.room)
+                .emit('opponent-played', { row: row, column: column })
+        // } catch (e) {
+        //     console.log(e)
+
+        //     // TODO: implement fail handler on front end
+        //     socket.emit('play-failed', { row: row, column: column })
+        // }
     })
 
     socket.on('register', function (data) {

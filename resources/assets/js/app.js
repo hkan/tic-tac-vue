@@ -118,6 +118,12 @@ new Vue({
             this.$broadcast('opponent-played', row, column)
         })
 
+        this.socket.on('played', (row, column, username) => {
+            if (username != this.username) {
+                this.$broadcast('opponent-played', row, column)
+            }
+        })
+
         this.socket.on('opponent-wants-again', () => {
             this.$emit('opponent-wants-again')
         })
