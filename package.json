@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "event-emitter": "^0.3.4",
     "express": "^4.14.0",
     "gulp": "^3.9.1",
     "laravel-elixir": "^5.0.0",
