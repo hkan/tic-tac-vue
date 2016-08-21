@@ -34,10 +34,6 @@ http.listen(ENV.SOCKET_PORT)
 io.use(function (socket, next) {
     var params = socket.handshake.query
 
-    if (params.opponent) {
-        socket.opponent = findClient(params.opponent)
-    }
-
     next()
 })
 
@@ -102,16 +98,6 @@ io.on('connection', function (socket) {
     Leaderboard.on('update', function (data) {
         socket.emit('leaderboard-data', data)
     })
-
-    // This client is supposed to be an opponent to an existing game
-    if (socket.opponent) {
-        var opponent = socket.opponent,
-            started = startGame(socket, opponent)
-
-        if (!started) {
-            socket.emit('game-failed')
-        }
-    }
 
     socket.on('disconnect', function () {
         if (socket.opponent) {
