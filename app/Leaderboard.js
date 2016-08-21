@@ -1,6 +1,3 @@
-// Event bus
-var eventBus = require('event-emitter')()
-
 // Database instance
 var low = require('lowdb')
 const db = low('db.json')
@@ -93,4 +90,5 @@ var Leaderboard = {
     },
 }
 
+require('event-emitter')(Leaderboard)
 module.exports = Leaderboard
