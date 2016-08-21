@@ -18,6 +18,7 @@ new Vue({
         connected: false,
         user: null,
         matchRequest: null,
+        opponent: null,
     },
 
     components: {
