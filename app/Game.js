@@ -15,8 +15,8 @@ Game.prototype.init = function () {
     this.setRoom()
     this.initTable()
 
-    this.home().game = game
-    this.away().game = game
+    this.home().game = this
+    this.away().game = this
 
     this.home().opponent = this.away()
     this.away().opponent = this.home()
