@@ -67,7 +67,7 @@ var Leaderboard = {
 
         // If user is not on leaderboard data yet, create it
         if (!user) {
-            user = { username: username, won: 0, lost: 0 }
+            user = { username: where.username, won: 0, lost: 0 }
 
             db.get('leaderboard').push(user).value()
         }
