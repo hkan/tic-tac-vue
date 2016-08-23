@@ -72,6 +72,9 @@ function startGame(socket, opponent) {
         // tell both parties about the game
         socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.game.room, starts: true })
         opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.game.room, starts: false })
+
+        socket.started = true
+        opponent.started = false
     })
 
     game.on('turn-switched', function (client) {
