@@ -169,7 +169,7 @@ io.on('connection', function (socket) {
         }
 
         // Opponent is already in a game
-        if (opponent.gameRoom) {
+        if (opponent.game) {
             socket.emit('match-failed', 'User is currently playing.')
             return
         }
@@ -265,7 +265,7 @@ io.on('connection', function (socket) {
 
         socket.wantsAgain = true
 
-        socket.broadcast.to(socket.gameRoom)
+        socket.broadcast.to(socket.game.room)
             .emit('opponent-wants-again')
     })
 
