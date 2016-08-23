@@ -267,6 +267,7 @@ io.on('connection', function (socket) {
         }
 
         socket.wantsAgain = true
+        socket.game.initTable()
 
         socket.broadcast.to(socket.game.room)
             .emit('opponent-wants-again')
