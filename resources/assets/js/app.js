@@ -54,8 +54,8 @@ new Vue({
             this.currentView = 'ready'
         },
 
-        'game-over'(winner) {
-            this.socket.emit('game-over')
+        'game-over'(result) {
+            this.socket.emit('game-over', result)
         },
 
         'game-surrendered'(user) {

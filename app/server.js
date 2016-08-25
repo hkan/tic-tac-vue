@@ -280,17 +280,11 @@ io.on('connection', function (socket) {
     /**
      * The game has ended so we update the leaderboard.
      */
-    socket.on('game-over', function (won) {
-        if (!socket.opponent) {
-            return
-        }
-
-        if (won) {
-            Leaderboard.won(socket.username)
-            Leaderboard.lost(socket.opponent.username)
-        } else {
-            Leaderboard.lost(socket.username)
-            Leaderboard.won(socket.opponent.username)
+    socket.on('game-over', function (result) {
+        if (result.result == 'won') {
+            Leaderboard.won(result.user)
+        } else if(result.result == 'lost') {
+            Leaderboard.lost(result.user)
         }
     })
 })

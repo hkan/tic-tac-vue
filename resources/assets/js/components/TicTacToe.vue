@@ -145,13 +145,13 @@
             homeWins() {
                 this.outcome = 'home'
                 this.over = true
-                this.$dispatch('game-over')
+                this.$dispatch('game-over', { result: 'won', user: this.$root.user.username })
             },
 
             awayWins() {
                 this.outcome = 'away'
                 this.over = true
-                this.$dispatch('game-over')
+                this.$dispatch('game-over', { result: 'lost', user: this.$root.user.username })
             },
 
             tie() {
@@ -184,13 +184,13 @@
             'opponent-surrenders'(){
                 this.outcome = 'surrendered'
                 this.over = true
-                this.$dispatch('game-over')
+                this.$dispatch('game-over', { result: 'won', user: this.$root.user.username })
             },
 
             'surrender'(){
                 this.outcome = 'away'
                 this.over = true
-                this.$dispatch('game-over')
+                this.$dispatch('game-over', { result: 'lost', user: this.$root.user.username })
                 this.$dispatch('game-surrendered')
             },
 
