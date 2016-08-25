@@ -237,6 +237,11 @@ io.on('connection', function (socket) {
      * User wants to play again.
      */
     socket.on('play-again', function () {
+        // Ignore the play again request, if there's no game to play again.
+        if (!socket.game) {
+            return
+        }
+
         // If opponent already confirmed to play again, start it
         if (socket.opponent && socket.opponent.wantsAgain) {
             // Start game for both
