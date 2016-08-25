@@ -27,6 +27,9 @@ var Leaderboard = require('./Leaderboard')
 
 var Game = require('./Game')
 
+// Username based matching
+var UsernameMatcher = require('./Matchers/UsernameMatcher')
+
 // Start HTTP Server
 http.listen(ENV.SOCKET_PORT)
 
@@ -156,6 +159,11 @@ io.on('connection', function (socket) {
      * @param {string} username Given username to find the user
      */
     socket.on('match-with', function (username) {
+        if (username == socket.username) {
+            socket.emit('match-failed', 'User is you.')
+            return
+        }
+
         var opponent = findByUsername(username)
 
         if (!opponent) {
@@ -163,85 +171,63 @@ io.on('connection', function (socket) {
             return
         }
 
-        if (opponent.username == socket.username) {
-            socket.emit('match-failed', 'User is you.')
-            return
-        }
-
         // Opponent is already in a game
-        if (opponent.gameRoom) {
-            socket.emit('match-failed', 'User is currently playing.')
+        if (opponent.game) {
+            socket.emit('match-failed', 'User is currently playing with someone else.')
             return
         }
 
-        opponent.gotMatchRequestedBy = socket
+        var matcher = new UsernameMatcher(socket, opponent)
 
-        socket.emit('matched')
-        opponent.emit('match-request', {username: socket.username})
+        matcher.on('request', function () {
+            socket.emit('matched')
+            opponent.emit('match-request', {username: socket.username})
+        })
+
+        matcher.on('denied', function () {
+            opponent.emit('match-denied')
+        })
+
+        matcher.on('confirmed', function () {
+            socket.emit('match-successful')
+            opponent.emit('match-successful')
+        })
+
+        matcher.on('completed', function () {
+            startGame(socket, opponent)
+        })
+
+        matcher.sendRequest();
     })
 
     socket.on('match-deny', function () {
-        var opponent = socket.gotMatchRequestedBy
-
-        if (!opponent) {
+        if (!socket.Matcher) {
             return
         }
 
-        // Clean up match request
-        delete socket.gotMatchRequestedBy
-
-        opponent.emit('match-denied')
+        socket.Matcher.deny()
     })
 
     /**
      * When user confirms the incoming match request.
      */
     socket.on('match-confirm', function () {
-        var opponent = socket.gotMatchRequestedBy
-
-        if (!opponent) {
-            socket.emit('match-confirm-failed')
+        if (!socket.Matcher) {
             return
         }
 
-        // Clean up match request
-        delete socket.gotMatchRequestedBy
-
-        socket.matched = opponent
-        opponent.matched = socket
-
-        socket.emit('match-successful')
-        opponent.emit('match-successful')
+        socket.Matcher.confirm()
     })
 
     /**
      * When one of the clients is ready to begin the game.
      */
     socket.on('ready-to-begin', function () {
-        var opponent = socket.matched
-
-        // No opponents? No game...
-        if (!opponent) {
+        if (!socket.Matcher) {
             return
         }
 
-        // If opponent's ready, game can start immediately
-        if (opponent.readyToBegin) {
-            // Clean up the match info
-            delete socket.readyToBegin
-            delete socket.matched
-            delete opponent.readyToBegin
-            delete opponent.matched
-
-            // Start the game
-            startGame(socket, opponent)
-
-            // Stop event execution here
-            return
-        }
-
-        // Mark this client as ready to begin and wait for opponent
-        socket.readyToBegin = true
+        socket.Matcher.ready(socket)
     })
 
     /**
