@@ -1,3 +1,5 @@
+var _ = require('lodash')
+
 /**
  * @param {Object} client The client who sends the match request.
  */
@@ -18,11 +20,11 @@ var RandomMatchList = {}
 /**
  * Sends the request
  */
-RandomMatcher.prototype.sendRequest = function () {
-    var opponent = this.search()
+RandomMatcher.prototype.search = function () {
+    var opponent = this.findOpponent()
 
     if (!opponent) {
-        setTimeout(this.sendRequest, 3000)
+        this.timeout = setTimeout(this.search.bind(this), 3000)
         return
     }
 
@@ -31,10 +33,6 @@ RandomMatcher.prototype.sendRequest = function () {
     delete RandomMatchList[opponent.username]
 
     this.settleWith(opponent)
-
-    // search for opponents
-    // if not found any, wait 3 secs and search again
-    // if found, start their game
 }
 
 /**
@@ -47,19 +45,30 @@ RandomMatcher.prototype.settleWith = function (opponent) {
         return
     }
 
+    opponent.RandomMatcher.found()
+
     // Clean up matcher data so system doesn't match them with someone else
     delete this.client.RandomMatcher
     delete opponent.RandomMatcher
 
-    this.opponent = opponent
+    this.emit('ready', opponent)
 }
 
 /**
  * Searches for players.
  */
-RandomMatcher.prototype.search = function () {
-    return _.find(RandomMatcher.list, function (socket) {
+RandomMatcher.prototype.findOpponent = function () {
+    var matcher = this
+
+    return _.find(RandomMatchList, function (socket) {
+
+        // If not looking for random players anymore...
         if (!socket.RandomMatcher) {
+            return false
+        }
+
+        // Cannot match with themselves
+        if (socket.username == matcher.client.username) {
             return false
         }
 
@@ -68,26 +77,14 @@ RandomMatcher.prototype.search = function () {
 }
 
 /**
- * Ready to start
+ * Searches for players.
  */
-RandomMatcher.prototype.ready = function (socket) {
-    var opponent = socket.id == this.client.id ? this.opponent : this.client
+RandomMatcher.prototype.found = function () {
+    var matcher = this
 
-    // If opponent's ready, game can start immediately
-    if (opponent.readyToBegin) {
-        // Clean up the match info
-        delete this.client.readyToBegin
-        delete this.client.matched
-        delete this.opponent.readyToBegin
-        delete this.opponent.matched
-
-        this.emit('completed')
-
-        // Stop event execution here
-        return
+    if (this.timeout) {
+        clearTimeout(this.timeout)
     }
-
-    socket.readyToBegin = true
 }
 
 // Event handler
