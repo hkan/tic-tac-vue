@@ -75,6 +75,9 @@ function startGame(socket, opponent) {
         // tell both parties about the game
         socket.emit('game', { opponent: { id: opponent.id.replace('/#', ''), username: opponent.username }, game: opponent.game.room, starts: true })
         opponent.emit('game', { opponent: { id: socket.id.replace('/#', ''), username: socket.username }, game: opponent.game.room, starts: false })
+
+        socket.started = true
+        opponent.started = false
     })
 
     game.on('turn-switched', function (client) {
@@ -250,25 +253,24 @@ io.on('connection', function (socket) {
         }
 
         socket.wantsAgain = true
+        socket.game.initTable()
 
-        socket.broadcast.to(socket.gameRoom)
+        socket.broadcast.to(socket.game.room)
             .emit('opponent-wants-again')
+    })
+
+    socket.on('surrender', function (data) {
+        socket.opponent.emit('opponent-surrenders')
     })
 
     /**
      * The game has ended so we update the leaderboard.
      */
-    socket.on('game-over', function (won) {
-        if (!socket.opponent) {
-            return
-        }
-
-        if (won) {
+    socket.on('game-over', function (result) {
+        if (result == 'won') {
             Leaderboard.won(socket.username)
-            Leaderboard.lost(socket.opponent.username)
-        } else {
+        } else if(result == 'lost') {
             Leaderboard.lost(socket.username)
-            Leaderboard.won(socket.opponent.username)
         }
     })
 })

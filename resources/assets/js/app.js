@@ -54,9 +54,17 @@ new Vue({
             this.currentView = 'ready'
         },
 
-        'game-over'(winner) {
-            this.socket.emit('game-over')
+        'game-over'(result) {
+            this.socket.emit('game-over', result)
         },
+
+        'game-surrendered'(user) {
+            this.socket.emit('surrender')
+        },
+
+        'opponent-surrenders'() {
+            this.$broadcast('opponent-surrenders')
+        }
     },
 
     ready() {
@@ -126,6 +134,14 @@ new Vue({
 
         this.socket.on('opponent-wants-again', () => {
             this.$emit('opponent-wants-again')
+        })
+
+        this.socket.on('surrender', ()=> {
+            this.$broadcast('surrender')
+        })
+
+        this.socket.on('opponent-surrenders', () => {
+            this.$emit('opponent-surrenders')
         })
     }
 })

@@ -11,6 +11,8 @@
             <span v-else>It's {{ $root.opponent.username }}'s turn.</span>
         </div>
 
+        <surrender v-show="myTurn"></surrender>
+
         <game-over v-show="over"></game-over>
     </div>
 </template>
@@ -18,6 +20,7 @@
 <script>
     import GameTable from './Table.vue'
     import GameOver from './GameOver.vue'
+    import Surrender from './Surrender.vue'
     import _ from 'lodash'
 
     export default {
@@ -27,7 +30,7 @@
                 myTurn: false,
 
                 over: false,
-                won: null,
+                outcome: null,
 
                 state: [
                     ['empty', 'empty', 'empty'],
@@ -79,6 +82,7 @@
         components: {
             GameTable,
             GameOver,
+            Surrender
         },
 
         methods: {
@@ -133,25 +137,25 @@
                     ['empty', 'empty', 'empty']
                 ])
 
-                this.won = null
+                this.outcome = null
                 this.over = false
                 this.myTurn = false
             },
 
             homeWins() {
-                this.won = 'home'
+                this.outcome = 'home'
                 this.over = true
-                this.$dispatch('game-over')
+                this.$dispatch('game-over', 'won')
             },
 
             awayWins() {
-                this.won = 'away'
+                this.outcome = 'away'
                 this.over = true
-                this.$dispatch('game-over')
+                this.$dispatch('game-over', 'lost')
             },
 
             tie() {
-                this.won = null
+                this.outcome = null
                 this.over = true
             }
         },
@@ -175,6 +179,19 @@
                 this.game = null
 
                 this.reset()
+            },
+
+            'opponent-surrenders'(){
+                this.outcome = 'surrendered'
+                this.over = true
+                this.$dispatch('game-over', 'won')
+            },
+
+            'surrender'(){
+                this.outcome = 'away'
+                this.over = true
+                this.$dispatch('game-over', 'lost')
+                this.$dispatch('game-surrendered')
             },
 
             'home-played'(cell) {

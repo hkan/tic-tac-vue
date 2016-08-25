@@ -9,6 +9,7 @@
                 <p :class="['control', {'has-icon has-icon-right': failResponse}]">
                     <input type="text"
                         :class="['input', {'is-danger': failResponse}]"
+                        autofocus
                         v-model="username"
                         placeholder="Choose your username...">
 
