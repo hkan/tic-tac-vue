@@ -281,10 +281,10 @@ io.on('connection', function (socket) {
      * The game has ended so we update the leaderboard.
      */
     socket.on('game-over', function (result) {
-        if (result.result == 'won') {
-            Leaderboard.won(result.user)
-        } else if(result.result == 'lost') {
-            Leaderboard.lost(result.user)
+        if (result == 'won') {
+            Leaderboard.won(socket.username)
+        } else if(result == 'lost') {
+            Leaderboard.lost(socket.username)
         }
     })
 })
