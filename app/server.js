@@ -273,6 +273,10 @@ io.on('connection', function (socket) {
             .emit('opponent-wants-again')
     })
 
+    socket.on('surrender', function (data) {
+        socket.opponent.emit('opponent-surrenders')
+    })
+
     /**
      * The game has ended so we update the leaderboard.
      */

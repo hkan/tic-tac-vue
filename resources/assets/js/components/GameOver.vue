@@ -1,8 +1,9 @@
 <template>
     <div :class="['game-over']">
-        <div v-if="won == 'home'">You won!</div>
-        <div v-if="won == 'away'">You lost!</div>
-        <div v-if="won == null">It's over</div>
+        <div v-if="outcome == 'home'">You won!</div>
+        <div v-if="outcome == 'away'">You lost!</div>
+        <div v-if="outcome == 'surrendered'">Opponent surrendered!</div>
+        <div v-if="outcome == null">It's over</div>
 
         <button class="button" @click="playAgain" :disabled="checked">
             <span v-show="checked">Waiting for opponent...</span>
@@ -25,8 +26,8 @@
         },
 
         computed: {
-            won() {
-                return this.$parent.won
+            outcome() {
+                return this.$parent.outcome
             }
         },
 
