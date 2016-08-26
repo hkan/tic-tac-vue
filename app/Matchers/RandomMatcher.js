@@ -28,11 +28,11 @@ RandomMatcher.prototype.search = function () {
         return
     }
 
+    this.settleWith(opponent)
+
     // Take them off the list
     delete RandomMatchList[this.client.username]
     delete RandomMatchList[opponent.username]
-
-    this.settleWith(opponent)
 }
 
 /**
@@ -41,15 +41,13 @@ RandomMatcher.prototype.search = function () {
  */
 RandomMatcher.prototype.settleWith = function (opponent) {
     // If one of them already found a game, abort
-    if (!this.client.RandomMatcher || !opponent.RandomMatcher) {
+    if (!RandomMatchList[this.client.username] || !RandomMatchList[opponent.username]) {
         return
     }
 
-    opponent.RandomMatcher.found()
-
-    // Clean up matcher data so system doesn't match them with someone else
-    delete this.client.RandomMatcher
-    delete opponent.RandomMatcher
+    this.opponent = opponent
+    this.client.opponent = opponent
+    opponent.RandomMatcher.found(this.client)
 
     this.emit('ready', opponent)
 }
@@ -79,12 +77,35 @@ RandomMatcher.prototype.findOpponent = function () {
 /**
  * Searches for players.
  */
-RandomMatcher.prototype.found = function () {
-    var matcher = this
+RandomMatcher.prototype.found = function (opponent) {
+    this.client.opponent = opponent
+    this.opponent = opponent
+    this.emit('ready', opponent)
 
     if (this.timeout) {
         clearTimeout(this.timeout)
     }
+}
+
+/**
+ * Ready to start
+ */
+RandomMatcher.prototype.ready = function (socket) {
+    var opponent = socket.id == this.client.id ? this.opponent : this.client
+
+    // If opponent's ready, game can start immediately
+    if (opponent.readyToBegin) {
+        // Clean up the match info
+        delete this.client.readyToBegin
+        delete this.opponent.readyToBegin
+
+        this.emit('completed', this.opponent)
+
+        // Stop event execution here
+        return
+    }
+
+    socket.readyToBegin = true
 }
 
 // Event handler

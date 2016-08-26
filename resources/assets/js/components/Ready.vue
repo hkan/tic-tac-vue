@@ -17,7 +17,7 @@
                 </span>
 
                 <button class="button is-primary" type="submit" :disabled="!username.length || matching" style="margin-top: 5px">
-                    <span v-if="matching">waiting for {{ username }}'s response</span>
+                    <span v-if="matching && username.length">waiting for {{ username }}'s response</span>
                     <span v-else>
                         <span v-if="username.length">send request to {{ username }}</span>
                         <span v-else>type in your friend's username to above</span>
@@ -25,6 +25,17 @@
                 </button>
             </p>
         </form>
+
+        <p class="has-text-centered">
+            or
+        </p>
+
+        <p class="control">
+            <button class="button is-primary" :disabled="matching" @click.prevent="random">
+                <span v-if="matching">looking for opponents</span>
+                <span v-else>match random players</span>
+            </button>
+        </p>
     </div>
 </template>
 
@@ -41,7 +52,11 @@
 
         methods: {
             random() {
-                this.$root.socket.emit('match-random')
+                this.$root.socket.emit('match-random', {}, () => {
+                    console.log('asd')
+                    this.$dispatch('new-random-game')
+                })
+                this.matching = true
             },
 
             user() {

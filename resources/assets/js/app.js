@@ -45,6 +45,10 @@ new Vue({
             this.socket.emit('register', data)
         },
 
+        'new-random-game'() {
+            this.currentView = 'game'
+        },
+
         'game-component-ready'() {
             this.socket.emit('ready-to-begin')
         },

@@ -30,6 +30,9 @@ var Game = require('./Game')
 // Username based matching
 var UsernameMatcher = require('./Matchers/UsernameMatcher')
 
+// Random matching
+var RandomMatcher = require('./Matchers/RandomMatcher')
+
 // Start HTTP Server
 http.listen(ENV.SOCKET_PORT)
 
@@ -157,6 +160,23 @@ io.on('connection', function (socket) {
     })
 
     /**
+     * When user requests to match with a random user.
+     */
+    socket.on('match-random', function (data, callback) {
+        var matcher = new RandomMatcher(socket)
+
+        matcher.on('ready', function (opponent) {
+            callback({ opponent: opponent.username })
+        })
+
+        matcher.on('completed', function (opponent) {
+            startGame(socket, opponent)
+        })
+
+        matcher.search()
+    })
+
+    /**
      * When user requests to match with a specific user.
      *
      * @param {string} username Given username to find the user
@@ -226,11 +246,13 @@ io.on('connection', function (socket) {
      * When one of the clients is ready to begin the game.
      */
     socket.on('ready-to-begin', function () {
-        if (!socket.Matcher) {
-            return
+        if (socket.RandomMatcher) {
+            socket.RandomMatcher.ready(socket)
         }
 
-        socket.Matcher.ready(socket)
+        if (socket.Matcher) {
+            socket.Matcher.ready(socket)
+        }
     })
 
     /**
