@@ -48,6 +48,11 @@
         padding: 40px 20px 0;
         margin-right: -10px;
         box-shadow: inset 0 0 6px 0 rgba(#000, .2);
+        display: none;
+
+        @media (min-width: 769px) {
+            display: block;
+        }
 
         h2 {
             color: #888;
