@@ -26,7 +26,7 @@
             </p>
         </form>
 
-        <p class="has-text-centered">
+        <p class="has-text-centered" style="margin-top: 1em">
             or
         </p>
 
@@ -35,6 +35,10 @@
                 <span v-if="matching">looking for opponents</span>
                 <span v-else>match random players</span>
             </button>
+        </p>
+
+        <p class="has-text-centered" style="margin-top: -1em">
+            <small>({{ randomPoolCount }} players in pool)</small>
         </p>
     </div>
 </template>
@@ -46,6 +50,7 @@
                 username: '',
                 usernameError: null,
                 randomError: null,
+                randomPoolCount: 0,
                 matching: false,
             }
         },
@@ -74,6 +79,10 @@
                 alert(this.username + ' denied your request')
                 this.usernameError = null
                 this.matching = false
+            })
+
+            this.$root.socket.on('pool-updated', response => {
+                this.randomPoolCount = response.pool
             })
 
             this.$el.querySelector('.input').focus()

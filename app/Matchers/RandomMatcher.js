@@ -10,12 +10,40 @@ var RandomMatcher = function (client) {
     this.opponent = null
 
     // Add to random matching list
-    RandomMatchList[client.username] = client;
+    RandomMatchList.add(client)
 
     this.client.RandomMatcher = this
 }
 
-var RandomMatchList = {}
+var RandomMatchList = {
+    all: {},
+
+    add: function (client) {
+        RandomMatchList.all[client.username] = client
+        RandomMatcher.emit('pool-updated')
+    },
+
+    remove: function (client) {
+        delete RandomMatchList.all[client.username]
+        RandomMatcher.emit('pool-updated')
+    },
+}
+
+/*
+|------------------------------------------------------------------------------
+| Class methods
+|------------------------------------------------------------------------------
+*/
+
+RandomMatcher.poolCount = function () {
+    return Object.keys(RandomMatchList.all).length
+}
+
+/*
+|------------------------------------------------------------------------------
+| Instance methods
+|------------------------------------------------------------------------------
+*/
 
 /**
  * Sends the request
@@ -31,8 +59,8 @@ RandomMatcher.prototype.search = function () {
     this.settleWith(opponent)
 
     // Take them off the list
-    delete RandomMatchList[this.client.username]
-    delete RandomMatchList[opponent.username]
+    RandomMatchList.remove(this.client)
+    RandomMatchList.remove(opponent)
 }
 
 /**
@@ -41,7 +69,7 @@ RandomMatcher.prototype.search = function () {
  */
 RandomMatcher.prototype.settleWith = function (opponent) {
     // If one of them already found a game, abort
-    if (!RandomMatchList[this.client.username] || !RandomMatchList[opponent.username]) {
+    if (!RandomMatchList.all[this.client.username] || !RandomMatchList.all[opponent.username]) {
         return
     }
 
@@ -110,5 +138,6 @@ RandomMatcher.prototype.ready = function (socket) {
 
 // Event handler
 require('event-emitter')(RandomMatcher.prototype)
+require('event-emitter')(RandomMatcher)
 
 module.exports = RandomMatcher

@@ -102,6 +102,8 @@ function startGame(socket, opponent) {
     return true
 }
 
+require('./randomPoolEvents')(io, RandomMatcher)
+
 // New socket client
 io.on('connection', function (socket) {
 
