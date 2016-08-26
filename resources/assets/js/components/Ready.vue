@@ -53,7 +53,6 @@
         methods: {
             random() {
                 this.$root.socket.emit('match-random', {}, () => {
-                    console.log('asd')
                     this.$dispatch('new-random-game')
                 })
                 this.matching = true
