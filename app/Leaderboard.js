@@ -49,7 +49,9 @@ var Leaderboard = {
      * Returns current leaderboard data.
      */
     current: function () {
-        return db.get('leaderboard').value()
+        return db.get('leaderboard').orderBy([function (o) {
+            return Math.floor(o.won - o.lost)
+        }, 'username'], ['desc', 'asc']).take(20).value()
     },
 
     query: function (where) {
