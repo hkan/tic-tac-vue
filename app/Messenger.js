@@ -12,16 +12,19 @@ db.defaults({ messenger: [] }).value()
 var Messenger = {
 
     add: function (user, data) {
+        // trimmed message
+        var message = data.message.trim()
+
         // basic validation
-        if (data.message.trim() == '') {
+        if (message == '') {
             return
         }
 
         // if the user hasn't chosen a username then specify a guest
-        var usr = (user == undefined) ? 'Guest' : user
+        var username = (user.username == undefined) ? 'Guest' : user.username
 
         // prepare the data for the database
-        var data = { username: usr, message: data.message, timestamp: Date.now() }
+        var data = { username: username, message: message, timestamp: Date.now() }
 
         // add the data to the database
         db.get('messenger').push(data).value()

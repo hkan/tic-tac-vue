@@ -172,7 +172,7 @@ io.on('connection', function (socket) {
      * When a user submits a message in the messenger.
      */
     socket.on('messenger-send', function (data) {
-        Messenger.add(socket.username, data)
+        Messenger.add({ username: socket.username }, data)
     })
 
     /**
