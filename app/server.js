@@ -13,11 +13,12 @@ var io = require('socket.io')(http)
 
 /*
 |--------------------------------------------------------------------------
-| Leaderboard
+| Objects
 |--------------------------------------------------------------------------
 */
 
 var Leaderboard = require('./Leaderboard')
+var Messenger = require('./Messenger')
 
 /*
 |--------------------------------------------------------------------------
@@ -106,12 +107,18 @@ require('./randomPoolEvents')(io, RandomMatcher)
 
 // New socket client
 io.on('connection', function (socket) {
-
     // Send the leaderboard data to the client
     socket.emit('leaderboard-data', Leaderboard.current())
 
+    // Send the messenger data to the client
+    socket.emit('messenger-data', Messenger.latest())
+
     Leaderboard.on('update', function (data) {
         socket.emit('leaderboard-data', data)
+    })
+
+    Messenger.on('update', function (data) {
+        socket.emit('messenger-data', data)
     })
 
     socket.on('disconnect', function () {
@@ -159,6 +166,13 @@ io.on('connection', function (socket) {
 
         socket.username = data.username
         socket.emit('registered')
+    })
+
+    /**
+     * When a user submits a message in the messenger.
+     */
+    socket.on('messenger-send', function (data) {
+        Messenger.add(socket.username, data)
     })
 
     /**
