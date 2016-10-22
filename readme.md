@@ -8,4 +8,4 @@ Thank you for considering contributing to Tic-Tac-Vue! Issues and pull requests 
 
 ## License
 
-This project is not licensed. Do whatever you want with it. Though crediting this Github repo would be nice in any kind of distribution or usage.
+This project is not licensed. Do whatever you want with it. Though crediting this GitHub repository would be nice in any kind of distribution or usage.
