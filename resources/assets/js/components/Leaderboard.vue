@@ -50,7 +50,7 @@
         box-shadow: inset 0 0 6px 0 rgba(#000, .2);
         display: none;
 
-        @media (min-width: 769px) {
+        @media (min-width: 992px) {
             display: block;
         }
 

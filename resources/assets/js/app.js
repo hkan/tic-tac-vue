@@ -1,6 +1,7 @@
 import Socket from 'socket.io-client'
 import Vue from 'vue'
 
+import Messenger from './components/Messenger.vue'
 import Leaderboard from './components/Leaderboard.vue'
 import Game from './components/Game.vue'
 import Welcome from './components/Welcome.vue'
@@ -22,6 +23,7 @@ new Vue({
     },
 
     components: {
+        Messenger,
         Leaderboard,
         Game,
         Welcome,
