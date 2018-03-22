@@ -1,7 +1,4 @@
-/.idea
-/node_modules
-/assets
-/tic-tac-vue
+.idea
+.vscode
+node_modules
 .DS_Store
-db
-db.json
