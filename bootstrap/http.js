@@ -10,7 +10,7 @@ app.use(require('express').static(
     )
 ))
 
-app.get('/', function (req, res, next) {
+app.get('*', function (req, res, next) {
     res.sendFile(
         require('path').resolve(
             __dirname,
