@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "watchify -vd -p browserify-hmr -e resources/js/app.js -o public/build/app.js",
     "build-dev": "browserify -p [ vueify/plugins/extract-css -o public/build/app.css ] -e resources/js/app.js | uglifyjs -c warnings=false -m > public/build/app.js",
-    "build": "cross-env NODE_ENV=production browserify -p [ vueify/plugins/extract-css -o public/build/app.css ] -e resources/js/app.js | uglifyjs -c warnings=false -m > public/build/app.js"
+    "build": "cross-env NODE_ENV=production browserify -p [ vueify/plugins/extract-css -o public/build/app.css ] -e resources/js/app.js | uglifyjs -c warnings=false -m > public/build/app.js",
+    "postinstall": "npm run build"
   },
   "author": "Hakan Aktaş <iletisim@hakanaktas.com.tr>",
   "contributors": [
