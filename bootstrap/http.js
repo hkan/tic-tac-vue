@@ -10,13 +10,13 @@ app.use(require('express').static(
     )
 ))
 
+app.set('views', require('path').resolve(__dirname, '../public'))
+app.set('view engine', 'hbs')
+
 app.get('*', function (req, res, next) {
-    res.sendFile(
-        require('path').resolve(
-            __dirname,
-            '../public/index.html'
-        )
-    )
+    res.render('index.hbs', {
+        style: process.env.NODE_ENV === 'production',
+    })
 })
 
 // Start HTTP Server
@@ -25,7 +25,7 @@ http.listen(process.env.PORT, '0.0.0.0', err => {
         return console.error('HTTP server cannot start.')
     }
 
-    console.log('HTTP server started listening on ' + process.env.APP_PORT)
+    console.log('HTTP server started listening on ' + process.env.PORT)
 })
 
 module.exports = {
