@@ -21,6 +21,10 @@
       "vueify"
     ]
   },
+  "engines": {
+    "node": "^8.9.4",
+    "npm": "^5.7.1"
+  },
   "dependencies": {
     "express": "^4.16.3",
     "ioredis": "^3.2.2",
