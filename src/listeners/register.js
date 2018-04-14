@@ -1,4 +1,5 @@
 const io = require('../../bootstrap/socket')
+const Player = require('../Game/Player')
 
 module.exports = function (data, callback) {
     if (typeof this.client.username === 'string' && this.client.username.length) {
@@ -29,5 +30,6 @@ module.exports = function (data, callback) {
     this.broadcast.emit('online', { username: data.username })
 
     this.client.username = data.username
+    this.client.player = new Player(this)
     callback(null)
 }

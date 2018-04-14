@@ -2,7 +2,10 @@
 const redis = require('../../bootstrap/redis')
 
 // Socket.IO
-const Socket = require('../../bootstrap/socket')
+const Server = require('../../bootstrap/socket')
+
+// Socket class
+const Socket = require('socket.io/lib/socket')
 
 module.exports = class Player {
 
@@ -11,7 +14,7 @@ module.exports = class Player {
      */
     static async randomOnline() {
         return redis.srandmember('online-list')
-            .then(id => Socket.sockets[id])
+            .then(id => Server.sockets[id])
     }
 
     /**

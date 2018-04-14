@@ -30,7 +30,12 @@
             <small>({{ randomPoolCount }} players in pool)</small>
         </p>
 
-        <Request v-for="request in requests" :key="request.by" :request="request" />
+        <Request
+            v-for="request in requests"
+            :key="request.by"
+            :request="request"
+            @dismiss="requests.splice($index, 1)"
+        />
     </div>
 </template>
 
@@ -92,12 +97,12 @@ export default {
 
     created() {
         socket.on('offline', this.handleOffline)
-        socket.on('game-requested', this.handleGameRequest)
+        socket.on('request', this.handleGameRequest)
     },
 
     beforeDestroy() {
         socket.off('offline', this.handleOffline)
-        socket.off('game-requested', this.handleGameRequest)
+        socket.off('request', this.handleGameRequest)
     }
 }
 </script>

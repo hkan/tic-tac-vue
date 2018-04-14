@@ -1,4 +1,5 @@
 const io = require('../../bootstrap/socket')
+const { Request } = require('../Request')
 
 module.exports = function (data, callback) {
     if (!typeof this.client.username === 'string' || !this.client.username.length) {
@@ -14,19 +15,19 @@ module.exports = function (data, callback) {
         })
     }
 
-    const sockets = io.of('/').adapter.nsp.connected
-    const socketID = Object.keys(sockets)
+    const allSockets = io.of('/').adapter.nsp.connected
+    const opponentSocketID = Object.keys(allSockets)
         .find(id => {
-            return sockets[id].client.username == data.username
+            return allSockets[id].client.username == data.username
         })
 
-    if (!socketID) {
+    if (!opponentSocketID) {
         return callback({
             message: 'Sorry, this user is not online right now.',
         })
     }
 
-    sockets[socketID].emit('game-requested', { by: this.client.username })
+    Request.make(this, allSockets[opponentSocketID])
 
     callback(null)
 }

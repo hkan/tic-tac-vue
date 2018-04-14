@@ -4,15 +4,23 @@
 
         <div class="field is-grouped">
             <p class="control">
-                <a class="button is-small is-primary">
+                <button
+                    class="button is-small is-primary"
+                    :disabled="isActionable"
+                    @click="accept"
+                >
                     Accept
-                </a>
+                </button>
             </p>
 
             <p class="control">
-                <a class="button is-small is-link">
-                    Decline
-                </a>
+                <button
+                    class="button is-small is-link"
+                    :disabled="isActionable"
+                    @click="refuse"
+                >
+                    Refuse
+                </button>
             </p>
         </div>
     </div>
@@ -36,6 +44,19 @@ export default {
     },
 
     methods: {
+        accept() {
+            this.$store.dispatch('lobby/acceptRequest', { username: this.username })
+            this.dismiss()
+        },
+
+        refuse() {
+            this.$store.dispatch('lobby/refuseRequest', { username: this.username })
+            this.dismiss()
+        },
+
+        dismiss() {
+            this.$emit('dismiss')
+        }
     },
 }
 </script>

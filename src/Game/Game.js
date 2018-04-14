@@ -1,7 +1,19 @@
-// GameTable
 const Table = require('./GameTable')
+const Player = require('./Player')
 
 module.exports = class Game {
+
+    /**
+     * @param {Player} home
+     * @param {Player} away
+     */
+    static make(home, away) {
+        const game = new Game(home, away)
+
+        game.init()
+
+        return game
+    }
 
     /**
      * @param {Player} home

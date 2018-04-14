@@ -28,7 +28,31 @@ export default {
                     resolve()
                 }))
             })
-        }
+        },
+
+        acceptRequest(context, data) {
+            return new Promise((resolve, reject) => {
+                socket.emit('request:accept', data, timeout(30 * 1000, err => {
+                    if (err) {
+                        return reject(err.message)
+                    }
+
+                    resolve()
+                }))
+            })
+        },
+
+        refuseRequest(context, data) {
+            return new Promise((resolve, reject) => {
+                socket.emit('request:refuse', data, timeout(30 * 1000, err => {
+                    if (err) {
+                        return reject(err.message)
+                    }
+
+                    resolve()
+                }))
+            })
+        },
     },
 
     mutations: {
