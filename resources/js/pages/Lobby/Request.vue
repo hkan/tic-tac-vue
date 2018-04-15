@@ -46,6 +46,7 @@ export default {
     methods: {
         accept() {
             this.$store.dispatch('lobby/acceptRequest', { username: this.username })
+            this.$router.push('/game')
             this.dismiss()
         },
 

@@ -93,11 +93,27 @@ export default {
         handleGameRequest(request) {
             this.requests.push(request)
         },
+
+        handleRequestAccept() {
+            if (!this.matching) {
+                return
+            }
+
+            this.$router.push('/game')
+        },
+
+        handleRequestRefuse() {
+            if (!this.matching) {
+                return
+            }
+        },
     },
 
     created() {
         socket.on('offline', this.handleOffline)
         socket.on('request', this.handleGameRequest)
+        socket.on('request:accepted', this.handleRequestAccept)
+        socket.on('request:refused', this.handleRequestRefuse)
     },
 
     beforeDestroy() {

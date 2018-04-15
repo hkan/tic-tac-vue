@@ -4,6 +4,7 @@ import store from './store'
 
 import Welcome from './pages/Welcome/Welcome.vue'
 import Lobby from './pages/Lobby/Lobby.vue'
+import Game from './pages/Game/Game.vue'
 
 // Use vue-router.
 Vue.use(VueRouter)
@@ -23,6 +24,10 @@ export default router = new VueRouter({
         {
             path: '/lobby',
             component: Lobby,
+        },
+        {
+            path: '/game',
+            component: Game,
         },
     ],
 })
