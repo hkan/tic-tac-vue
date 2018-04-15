@@ -4182,9 +4182,9 @@ through2@^2.0.0:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
 
-"timeout-callback@git+https://git@github.com/hkan/node-timeout-callback.git":
-  version "1.0.0"
-  resolved "git+https://git@github.com/hkan/node-timeout-callback.git#9db9a0e3ff1e7b16b0fc07c402c8716e27ca5ee9"
+timeout-callback@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/timeout-callback/-/timeout-callback-2.0.1.tgz#9b607a328c92f0d38e0ff753e9fbfbac743c3d67"
   dependencies:
     mocha "^3.2.0"
 

@@ -24,7 +24,7 @@ export default {
 
                     context.commit('mark', { row, column, value })
                     resolve()
-                }))
+                }, { isolateFirstArgForTimeoutError: false }))
             })
         },
 

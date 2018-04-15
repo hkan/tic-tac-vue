@@ -27,7 +27,7 @@ export default {
 
                     context.commit('username', data.username)
                     resolve()
-                }))
+                }, { isolateFirstArgForTimeoutError: false }))
             })
         }
     },

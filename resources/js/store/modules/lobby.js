@@ -26,7 +26,7 @@ export default {
                     }
 
                     resolve()
-                }))
+                }, { isolateFirstArgForTimeoutError: false }))
             })
         },
 
