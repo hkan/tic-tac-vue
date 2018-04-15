@@ -16,6 +16,19 @@ export default {
 
     actions: {
         markCell(context, { row, column, value }) {
+            return new Promise((resolve, reject) => {
+                socket.emit('game:mark', { row, column }, timeout(30 * 1000, err => {
+                    if (err) {
+                        return reject(err)
+                    }
+
+                    context.commit('mark', { row, column, value })
+                    resolve()
+                }))
+            })
+        },
+
+        markCellDirect(context, { row, column, value }) {
             context.commit('mark', { row, column, value })
         },
     },

@@ -33,7 +33,7 @@ module.exports = class Player {
         this.game = null
 
         /**
-         * @type {PLayer?}
+         * @type {Player?}
          */
         this.opponent = null
 

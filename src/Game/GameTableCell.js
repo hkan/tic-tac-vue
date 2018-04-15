@@ -3,8 +3,8 @@ module.exports = class Cell {
         this.state = 0
     }
 
-    set(newState) {
-        if (state !== 0) {
+    async set(newState) {
+        if (this.state !== 0) {
             throw new Error('The cell is not empty.')
         }
 

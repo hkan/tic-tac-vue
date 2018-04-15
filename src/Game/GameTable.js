@@ -21,6 +21,7 @@ module.exports = class Table {
     /**
      * @param {number} row
      * @param {number} col
+     * @returns {Cell}
      */
     cell(row, col) {
         return this.state[row][col]

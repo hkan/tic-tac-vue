@@ -17,7 +17,7 @@ export default {
 
     created() {
         socket.on('game:marked', ({ row, column }) => {
-            this.$store.dispatch('game/markCell', {
+            this.$store.dispatch('game/markCellDirect', {
                 row,
                 column,
                 value: 'away',
