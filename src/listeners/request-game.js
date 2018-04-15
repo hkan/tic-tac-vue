@@ -15,6 +15,12 @@ module.exports = function (data, callback) {
         })
     }
 
+    if (data.username == this.client.username) {
+        return callback({
+            message: 'You cannot invite yourself, dummy!'
+        })
+    }
+
     const allSockets = io.of('/').adapter.nsp.connected
     const opponentSocketID = Object.keys(allSockets)
         .find(id => {
