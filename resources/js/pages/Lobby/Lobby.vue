@@ -37,8 +37,8 @@
 
             <div class="field">
                 <div class="control">
-                    <button class="button is-secondary is-fullwidth" type="button" @client.prevent="randomUser">
-                        play a someone random
+                    <button class="button is-fullwidth" type="button" @client.prevent="randomUser">
+                        play someone random
                     </button>
                 </div>
             </div>
@@ -99,6 +99,10 @@ export default {
 
         },
 
+        handlePoolUpdate(poolCount) {
+            this.randomPoolCount = poolCount
+        },
+
         handleOffline({ username }) {
             if (username === this.opponent) {
                 this.matchError = this.opponent + ' went offline'
@@ -132,6 +136,7 @@ export default {
     },
 
     created() {
+        socket.on('pool-updated', this.handlePoolUpdate)
         socket.on('offline', this.handleOffline)
         socket.on('request', this.handleGameRequest)
         socket.on('request:accepted', this.handleRequestAccept)

@@ -31,5 +31,6 @@ module.exports = function (data, callback) {
 
     this.client.username = data.username
     this.client.player = new Player(this)
+
     callback(null)
 }
