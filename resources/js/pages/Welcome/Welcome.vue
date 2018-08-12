@@ -6,27 +6,31 @@
 
         <div v-else>
             <form @submit.prevent="submit">
-                <fieldset :disabled="loading">
-                    <p :class="['control', {'has-icon has-icon-right': error}]">
+                <div class="field">
+                    <div :class="['control', {'has-icon has-icon-right': error}]">
                         <input type="text"
                             :class="['input', {'is-danger': error}]"
                             autofocus
                             v-model="username"
                             @input="clearErrors"
-                            placeholder="Choose your username...">
+                            placeholder="Choose your username..."
+                            :disabled="loading"
+                        >
 
-                        <span v-if="error" class="help is-danger">
+                        <p class="help is-danger" v-if="error">
                             {{ error }}
-                        </span>
-                    </p>
+                        </p>
+                    </div>
+                </div>
 
-                    <p class="control">
-                        <button
-                            type="submit"
+                <div class="field">
+                    <div class="control">
+                        <button type="submit"
                             :class="['button', 'is-primary', {'is-loading': loading}]"
+                            :disabled="loading"
                         >Start</button>
-                    </p>
-                </fieldset>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -60,7 +64,9 @@ export default {
 
             this.$store.dispatch('user/register', { username: this.username })
                 .finally(() => {
-                    this.loading = false
+                    setTimeout(() => {
+                        this.loading = false
+                    }, 300);
                 })
                 .then(response => {
                     return this.$router.push('/lobby')

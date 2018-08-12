@@ -2,40 +2,49 @@
     <div class="ready has-text-centered">
         <h1>Hey, {{ username }}!</h1>
 
-        <div>
-            <form @submit.prevent="user">
-            <fieldset :disabled="requesting">
-                <p class="control">
-                    <input
-                        type="text"
+        <form @submit.prevent="user">
+            <div class="field">
+                <div class="control">
+                    <input type="text"
                         :class="['input', { 'is-danger': matchError }]"
                         v-model="opponent"
                         :disabled="matching"
                     >
 
-                    <span class="help is-danger" v-show="matchError">
+                    <p class="help is-danger" v-show="matchError">
                         {{ matchError }}
-                    </span>
-                </p>
+                    </p>
+                </div>
+            </div>
 
-                <p class="control">
-                    <button :class="['button is-primary', { 'is-loading': this.requesting }]" type="submit" :disabled="!opponent.length || matching">
+            <div class="field">
+                <div class="control">
+                    <button :class="['button is-primary', { 'is-loading': this.requesting }]" 
+                        type="submit" 
+                        :disabled="!opponent.length || matching"
+                    >
                         <template v-if="matching && opponent.length">waiting for {{ opponent }}'s response</template>
                         <template v-else-if="requesting"></template>
                         <template v-else-if="opponent.length">send request to {{ opponent }}</template>
                         <template v-else>type in a username above</template>
                     </button>
-                </p>
-            </fieldset>
+                </div>
+            </div>
+
+            <div class="field">
+                <small>({{ randomPoolCount }} players in pool)</small>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <button class="button is-secondary is-fullwidth" type="button" @client.prevent="randomUser">
+                        play a someone random
+                    </button>
+                </div>
+            </div>
         </form>
-        </div>
 
-        <p>
-            <small>({{ randomPoolCount }} players in pool)</small>
-        </p>
-
-        <Request
-            v-for="request in requests"
+        <Request v-for="request in requests"
             :key="request.by"
             :request="request"
             @dismiss="requests.splice($index, 1)"
@@ -84,6 +93,10 @@ export default {
                 .catch(err => {
                     this.matchError = err
                 })
+        },
+
+        randomUser() {
+
         },
 
         handleOffline({ username }) {
@@ -136,10 +149,10 @@ export default {
 .ready {
     width: 350px;
 
-    .button {
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    form {
+        [type="submit"] {
+            width: 100%;
+        }
     }
 }
 </style>
