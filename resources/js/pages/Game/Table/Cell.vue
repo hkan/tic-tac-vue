@@ -45,45 +45,45 @@ export default {
 
 <style lang="scss" scoped>
 div.cell {
-  position: relative;
-  background: #f5f5f5;
+    position: relative;
+    background: hsl(0, 0%, 96%);
 
-  &.state-empty.turn {
-    cursor: pointer;
+    &.state-empty.turn {
+        cursor: pointer;
 
-    &:hover {
-      background: #eee;
+        &:hover {
+            background: #eee;
+        }
     }
-  }
 
-  &.state-home {
-    &:before {
-      content: "";
-      height: 60px;
-      width: 35px;
-      border: solid green;
-      border-width: 0 15px 15px 0;
-      position: absolute;
-      left: 50%;
-      top: 10px;
-      margin: 0;
-      transform: translate(-50%) rotate(45deg);
+    &.state-home {
+        &:before {
+            content: "";
+            height: 60px;
+            width: 35px;
+            border: solid hsl(141, 71%, 48%);
+            border-width: 0 15px 15px 0;
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            margin: 0;
+            transform: translate(-50%) rotate(45deg);
+        }
     }
-  }
 
-  &.state-away {
-    &:before {
-      content: "";
-      height: 70px;
-      width: 70px;
-      border: 15px solid red;
-      border-radius: 50%;
-      position: absolute;
-      left: 50%;
-      top: 10px;
-      margin: 0;
-      transform: translate(-50%);
+    &.state-away {
+        &:before {
+            content: "";
+            height: 70px;
+            width: 70px;
+            border: 15px solid hsl(348, 100%, 61%);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            margin: 0;
+            transform: translate(-50%);
+        }
     }
-  }
 }
 </style>

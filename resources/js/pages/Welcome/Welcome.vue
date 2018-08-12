@@ -1,5 +1,5 @@
 <template>
-    <div class="welcome">
+    <div class="welcome has-text-centered">
         <h1>Welcome to TicTacVue!</h1>
 
         <div v-if="!isConnected">Just a sec, awaiting server connection...</div>
@@ -76,13 +76,12 @@ export default {
 
 <style lang="scss" scoped>
 .welcome {
-  text-align: center;
-  max-width: 400px;
+    width: 350px;
 
-  form {
-    [type="submit"] {
-      width: 100%;
+    form {
+        [type="submit"] {
+            width: 100%;
+        }
     }
-  }
 }
 </style>

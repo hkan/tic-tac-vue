@@ -2,29 +2,33 @@
     <div class="ready has-text-centered">
         <h1>Hey, {{ username }}!</h1>
 
-        <form @submit.prevent="user">
-            <p class="control">
-                <input
-                    type="text"
-                    :class="['input', { 'is-danger': matchError }]"
-                    v-model="opponent"
-                    :disabled="matching"
-                >
+        <div>
+            <form @submit.prevent="user">
+            <fieldset :disabled="requesting">
+                <p class="control">
+                    <input
+                        type="text"
+                        :class="['input', { 'is-danger': matchError }]"
+                        v-model="opponent"
+                        :disabled="matching"
+                    >
 
-                <span class="help is-danger" v-show="matchError">
-                    {{ matchError }}
-                </span>
-            </p>
+                    <span class="help is-danger" v-show="matchError">
+                        {{ matchError }}
+                    </span>
+                </p>
 
-            <p class="control">
-                <button :class="['button is-primary', { 'is-loading': this.requesting }]" type="submit" :disabled="!opponent.length || matching">
-                    <template v-if="matching && opponent.length">waiting for {{ opponent }}'s response</template>
-                    <template v-else-if="requesting"></template>
-                    <template v-else-if="opponent.length">send request to {{ opponent }}</template>
-                    <template v-else>type in a username above</template>
-                </button>
-            </p>
+                <p class="control">
+                    <button :class="['button is-primary', { 'is-loading': this.requesting }]" type="submit" :disabled="!opponent.length || matching">
+                        <template v-if="matching && opponent.length">waiting for {{ opponent }}'s response</template>
+                        <template v-else-if="requesting"></template>
+                        <template v-else-if="opponent.length">send request to {{ opponent }}</template>
+                        <template v-else>type in a username above</template>
+                    </button>
+                </p>
+            </fieldset>
         </form>
+        </div>
 
         <p>
             <small>({{ randomPoolCount }} players in pool)</small>
@@ -87,6 +91,8 @@ export default {
                 this.matchError = this.opponent + ' went offline'
                 this.opponent = ''
                 this.matching = false
+
+                this.$router.push('/game')
             }
         },
 
@@ -94,12 +100,12 @@ export default {
             this.requests.push(request)
         },
 
-        handleRequestAccept() {
+        handleRequestAccept({ username }) {
+            this.opponent = username;
+
             if (!this.matching) {
                 return
             }
-
-            this.$router.push('/game')
         },
 
         handleRequestRefuse() {
@@ -128,13 +134,12 @@ export default {
 
 <style lang="scss" scoped>
 .ready {
-  margin: 50px auto;
-  max-width: 400px;
+    width: 350px;
 
-  .button {
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    .button {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 </style>

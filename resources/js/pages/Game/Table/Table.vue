@@ -24,22 +24,22 @@ export default {
 
 <style lang="scss" scoped>
 .tic-tac-toe-table {
-  width: 300px;
-  margin: 50px auto 30px;
+    width: 300px;
+    margin: 50px auto 30px;
 
-  .row {
-    display: flex;
-    justify-content: space-between;
+    .row {
+        display: flex;
+        justify-content: space-between;
 
-    + .row {
-      margin-top: 15px;
+        + .row {
+            margin-top: 15px;
+        }
+
+        .cell {
+            flex: 0 0 90px;
+            border-radius: 10px;
+            height: 90px;
+        }
     }
-
-    .cell {
-      flex: 0 0 90px;
-      border-radius: 10px;
-      height: 90px;
-    }
-  }
 }
 </style>
