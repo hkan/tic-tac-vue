@@ -1,3 +1,6 @@
 const ioredis = require('ioredis')
 
-module.exports = new ioredis(process.env.REDIS_URL)
+const redis = new ioredis(process.env.REDIS_URL)
+    .on('error', err => {})
+
+module.exports = redis;

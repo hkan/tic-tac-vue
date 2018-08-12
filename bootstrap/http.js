@@ -20,7 +20,7 @@ app.get('*', function (req, res, next) {
 })
 
 // Start HTTP Server
-http.listen(process.env.PORT, '0.0.0.0', err => {
+http.listen(process.env.PORT, process.env.HOST, err => {
     if (err) {
         return console.error('HTTP server cannot start.')
     }

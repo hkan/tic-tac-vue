@@ -1,27 +1,35 @@
 <template>
     <div class="request">
-        <p>{{ username }} has invited you for a game.</p>
+        <div class="modal is-active">
+            <div class="modal-background"></div>
 
-        <div class="field is-grouped">
-            <p class="control">
-                <button
-                    class="button is-small is-primary"
-                    :disabled="isActionable"
-                    @click="accept"
-                >
-                    Accept
-                </button>
-            </p>
+            <div class="modal-content">
+                <div class="box">
+                    <p>{{ username }} has invited you for a game.</p>
 
-            <p class="control">
-                <button
-                    class="button is-small is-link"
-                    :disabled="isActionable"
-                    @click="refuse"
-                >
-                    Refuse
-                </button>
-            </p>
+                    <div class="field is-grouped is-grouped-centered">
+                        <p class="control">
+                            <button
+                                class="button is-small is-primary"
+                                :disabled="isActionable"
+                                @click="accept"
+                            >
+                                Accept
+                            </button>
+                        </p>
+
+                        <p class="control">
+                            <button
+                                class="button is-small is-link"
+                                :disabled="isActionable"
+                                @click="refuse"
+                            >
+                                Refuse
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -63,5 +71,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.modal {
+    &-background {
+        background-color: rgba(0, 0, 0, .5);
+    }
+}
 </style>

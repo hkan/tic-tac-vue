@@ -31,7 +31,7 @@
     "ioredis": "^3.2.2",
     "lodash": "^4.17.5",
     "socket.io": "^2.0.4",
-    "timeout-callback": "git+https://git@github.com/hkan/node-timeout-callback.git",
+    "timeout-callback": "^2.0.1",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
