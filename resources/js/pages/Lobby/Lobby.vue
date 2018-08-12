@@ -106,6 +106,9 @@ export default {
             if (!this.matching) {
                 return
             }
+
+            this.opponent = ''
+            this.matching = false
         },
     },
 
